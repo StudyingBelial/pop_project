@@ -7,8 +7,7 @@ class StockItem:
         item_type = "", 
         brand = "N/A", 
         vat = 17.5,
-        name = "Unknown Stock Name"
-        ):
+        name = "Unknown Stock Name"):
         self.name = name
         self.quantity = quantity
         self.price = price
