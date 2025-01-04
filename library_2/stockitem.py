@@ -1,5 +1,3 @@
-from global_enums import ItemSize, Warranty
-
 class StockItem:
     def __init__(
         self, 
@@ -11,9 +9,7 @@ class StockItem:
         item_type = "", 
         brand = "N/A", 
         vat = 17.5,
-        item_size = ItemSize.UNDEFINED,
-        warrenty_type = Warranty.Type.NONE,
-        warrenty_duration = Warranty.Duration.NONE
+        item_size = ""
     ):
         StockItem.constructor_validation(self, id, name, quantity, price, description, item_type, brand, vat, item_size, warrenty_type, warrenty_duration)
         self.id = id
@@ -25,8 +21,6 @@ class StockItem:
         self.brand = brand
         self.vat = vat
         self.item_size = item_size
-        self.warrenty_type = warrenty_type
-        self.warrenty_duration = warrenty_duration
 
     def constructor_validation(self, id, name, quantity, price, description, item_type, brand, vat, item_size, warrenty_type, warrenty_duration):
         self.type_checker(id, str, 'id')
@@ -37,10 +31,7 @@ class StockItem:
         self.type_checker(item_type, str, 'item_type')
         self.type_checker(brand, str, 'brand')
         self.type_checker(vat, (int, float), 'vat')
-        self.type_checker(item_size, ItemSize, 'ItemSize')
-        self.type_checker(warrenty_type, Warranty.Type, 'Warranty.Type')
-        self.type_checker(warrenty_duration, Warranty.Duration, 'Warranty.Duration')
-
+        self.type_checker(item_size, str, 'item_size')
 
     def type_checker(self, variable, types, variable_name):
         if not isinstance(variable, types):
@@ -79,16 +70,8 @@ class StockItem:
         self.vat = vat
 
     def set_item_size(self, item_size):
-        
+        self.type_checker(item_size, str, "item_size")
         self.item_size = item_size
-
-    def set_warrenty_type(self, warrenty_type):
-        self.type_checker(warrenty_type, Warranty.Type, 'Warranty.Type')
-        self.warrenty_type = warrenty_type
-
-    def set_warrenty_duration(self, warrenty_duration):
-        self.type_checker(warrenty_duration, Warranty.Duration, 'Warranty.Duration')
-        self.warrenty_duration = warrenty_duration
 
     def increase_stock(self, change_amt):
         self.type_checker(change_amt, int, 'change_amt')
@@ -112,6 +95,4 @@ class StockItem:
             "brand": self.brand,
             "vat": self.vat,
             "item_size": self.item_size,
-            "warranty_type": self.warrenty_type,
-            "warranty_duration": self.warrenty_duration
         }
