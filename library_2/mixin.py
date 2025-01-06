@@ -77,6 +77,10 @@ class PowerChainMixin(BaseMixin):
             raise ValueError("Fuel efficiency must be greater than zero")
         self.fuel_efficiency = fuel_efficiency
 
+    def set_transmission_type(self, transmission_type):
+        self.mixin_type_check(transmission_type, str, "transmission_type")
+        self.transmission_type = transmission_type
+
     def get_horsepower(self):
         return getattr(self, "horsepower", None)
 
@@ -88,6 +92,9 @@ class PowerChainMixin(BaseMixin):
 
     def get_fuel_efficiency(self):
         return getattr(self, "fuel_efficiency", None)
+
+    def get_transmission_type(self):
+        return getattr(self, "transmission_type", None)
 
 class ElectricalSystemMixin(BaseMixin):
     def set_battery_type(self, battery_type):
