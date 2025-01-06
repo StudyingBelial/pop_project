@@ -29,10 +29,6 @@ class ElectricalSystem(MaterialProperty):
         self.set_display_type(display_type)
         self.get_power_efficiency()
 
-
-
-    
-
     def set_voltage(self, voltage):
         self.material_type_check(voltage, (int, float), "voltage in V")
         self.voltage = voltage

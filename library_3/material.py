@@ -1,3 +1,5 @@
+
+
 class MaterialProperty:
     def __init__(self, *args, **kwargs):
         raise TypeError(f"Cannot Instantiate {self.__class__.__name__}")
@@ -7,13 +9,13 @@ class MaterialProperty:
             raise TypeError(f"{variable_name} must be of type {types}")
 
     def set_weight(self, weight):
-        self.mixin_type_check(weight, (int, float), "weight")
+        self.material_type_check(weight, (int, float), "weight")
         if (weight <= 0):
             raise ValueError("Weight cannot be Zero or negative")
         self.weight = weight
 
     def set_dimensions(self, dimension_tuple):
-        self.material_type_check(dimension_touple, tuple, "dimension_tuple")
+        self.material_type_check(dimension_tuple, tuple, "dimension_tuple")
         for value in dimension_tuple:
             self.material_type_check(value, (int, float), "dimension_value")
         if (len(dimension_tuple) != 3):

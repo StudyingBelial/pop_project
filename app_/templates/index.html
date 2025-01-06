@@ -3,9 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
+    <title>POS</title>
 </head>
 <body>
-    
+    <div class="container border rounded shadow p-4 mt-5">
+        <form action="/get_items" method="POST">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="item_id" id="item_id" required placeholder="Item Id">
+                <label class="form-label" for="item_id">Item Id</label>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="component">Component Type</label>
+                <select class="form-select" id="component" name="component" required>
+                    <option value="" disabled selected>Select type</option>
+                    <option value="engine">Engine</option>
+                    <option value="transmission">Transmission</option>
+                    <option value="tire">Tire</option>
+                    <option value="brake">Brake</option>
+                    <option value="suspension">Suspension</option>
+                    <option value="paint">Paint</option>
+                    <option value="seatandcover">Seat and Cover</option>
+                    <option value="decalandtint">Decal and Tint</option>
+                    <option value="battery">Battery</option>
+                    <option value="wiringharness">Wiring Harness</option>
+                    <option value="infotainment">Infotainment</option>
+                </select>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Find</button>
+            </div>
+        </form>
+    </div>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 mb-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{part_name}}</h5>
+                        <h6>{{part_id}}</h6>
+                        <span class="card-text">Per Part Cost: {{per_part_cost}}</span>
+                        <span class="card_text">Quantity: {{quantity}}</span>
+                        <span class="card_text">VAT: {{vat}}</span>
+                        <span class="card-text">Item Total: {{item_total}}</span>
+                        <a href="#" class="btn btn-" class="text-decoration-none">Change</a>
+                        <a href="#" class="btn btn-trash" class="text-decoration-none">Remove</a>
+                    </div>
+                </div>
+            </div>
+            <!-- NEW CARD HERE -->
+        </div>
+    </div>
 </body>
 </html>
