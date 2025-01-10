@@ -40,9 +40,9 @@ def data_inatilizers():
         "paint": ".\\app_\\data\\paints.csv",
         "seat_and_cover": ".\\app_\\data\\seatandcovers.csv",
         "decal_and_tint": ".\\app_\\data\\decalandtints.csv",
-        # "battery" = battery,
-        # "wiringharness" = wiringharness,
-        # "infotainment" = infotainment
+        "battery" : ".\\app_\\data\\battery",
+        "wiringharness" : ".\\app_\\data\\wiringharness",
+        "infotainment" : ".\\app_\\data\\infotainment"
     }
     engine = df_creator(g.filepaths["engine"])
     transmission = df_creator(g.filepaths["transmission"])
@@ -52,9 +52,9 @@ def data_inatilizers():
     paint = df_creator(g.filepaths["paint"])
     seat_and_cover = df_creator(g.filepaths["seat_and_cover"])
     decal_and_tint = df_creator(g.filepaths["decal_and_tint"])
-    #battery = df_creator("")
-    #wiringharness = df_creator("")
-    #infotainment = df_creator("")
+    battery = df_creator(g.filepaths["battery"])
+    wiringharness = df_creator(g.filepaths["wiringharness"])
+    infotainment = df_creator(g.filepaths["infotainment"])
 
 
     g.dataframes = {
@@ -66,9 +66,9 @@ def data_inatilizers():
         "paint": paint,
         "seat_and_cover": seat_and_cover,
         "decal_and_tint": decal_and_tint,
-        # "battery" = battery,
-        # "wiringharness" = wiringharness,
-        # "infotainment" = infotainment
+        "battery" : battery,
+        "wiringharness" : wiringharness,
+        "infotainment" : infotainment
     }
     print("Inatilized Dataframes")
     g.classes = {
@@ -91,18 +91,33 @@ def row_accesser(value, df_name):
         df = g.dataframes[df_name]
         row = df.loc[value]
     except AttributeError as e:
-        print(f"Attribute Error: {e}")
+        error = f"Attribute Error: {e}"
+        return error
     except KeyError as e:
-        print(f"KeyError:{e}")
+        error = f"KeyError:{e}. Entered type does not exist!"
+        return error
     except Exception as e:
-        print(f"Unexpected Error: {e}")
-        return None
+        error = f"Unexpected Error: {e}"
+        return error
+    if row.empty:
+        return "Incorrect ID, Please Try Again"
     dictionary = row.to_dict()
     print(dictionary)
-    dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
-    dictionary["composition"] = ast.literal_eval(dictionary["composition"])
-    true_quantity = dictionary["quantity"]
-    return dictionary, true_quantity
+    try:
+        dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
+        dictionary["composition"] = ast.literal_eval(dictionary["composition"])
+        dictionary["quantity"] = int(dictionary["quantity"])
+    except ValueError as e:
+        error = f"ValueError: {e}"
+        return error
+    except TypeError as e:
+        error = f"TypeError: {e}"
+        return error
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return error
+
+    return dictionary
 
 def create_component_object(component,dictionary):
     try:
@@ -113,6 +128,12 @@ def create_component_object(component,dictionary):
     except Exception as e:
         print(f"Unexpected Error: {e}")
     else:
+        print(f"DICTIONARY BEFORE UNPACKING: {dictionary}")
+        # Off case Error Handelling for an unknown behaviour
+        if isinstance(dictionary, tuple):
+            dictionary = dictionary[0]
+        else:
+            dictionary = dictionary
         return obj(**dictionary)
     return None
 
@@ -151,9 +172,23 @@ def add_item_by_id():
     except Exception as e:
         print(f"Unexpected Error: {e}")
 
+    item_data = row_accesser(df_name = component, value=item_search)
+    if isinstance(item_data, str) or (not isinstance(item_data, dict)):
+        return render_template("error.html", message = item_data)
+    else:
+        # Checks if the item requested by the user exists in the database
+        if item_data is None:
+            print("Item not found")
+            return render_template("error.html", message = "Item not found")
+        else:
+            print("Item FOUND")
+
     # Normalizes the quantity into an int
     try:
+        true_quantity = int(item_data["quantity"])
         quantity = int(quantity)
+        true_quantity = int(true_quantity)
+        print(f"TRUE QUANTITY: {true_quantity}")
         if (quantity < 1):
             print("Normalized Negative quantity to 1")
             quantity = 1
@@ -162,36 +197,34 @@ def add_item_by_id():
         quantity = 1
     except Exception as e:
         print(f"Unexpected Error: {e}")
-
-    item_data, true_quantity = row_accesser(df_name = component, value=item_search)
-
-    # Checks if the item requested by the user exists in the database
-    if item_data is None:
-        print("Item not found")
-        return "Item Not Found"
-    else:
-        print("Item FOUND")
+        quantity = 1
 
     # Checks if quantity asked by the user is valid
     if (quantity > true_quantity):
         print(f"Error! Requested Quantity Exceeds current stock")
         print(f"Normalized quanity to max quantity in db")
         quantity = true_quantity
+        print(f"TRUE QUANTITY: {true_quantity}")
 
+    print(f"QUANTITY: {quantity}, TYPE: {type(quantity)}")
     # creating an  appropraite object of the data and checking if all the values align, as well as to set different values like id and quantity
     obj = create_component_object(component=component, dictionary=item_data)
-    obj.part_stock.set_id(item_search)
-    obj.part_stock.set_quantity(quantity)
+    try:
+        obj.part_stock.set_id(item_search)
+        obj.part_stock.set_quantity(quantity)
+    except ValueError as e:
+        print(f"ValueError:  {e}")
+        print("Error in setting the ID or the Quantity of the requested Item")
+    except Exception as e:
+        print(f"Unexpected Error: {e}")   
     add_to_cart(obj.get_complete_details())
 
     return render_template("index.html", cart_items= show_cart())
 
-@app.route('/add_new_stock_page')
-def add_stock_page():
-    return render_template("add_new_stock.html")
-
-@app.route('/add_new_item', methods=["POST"])
+@app.route('/add_new_item', methods=["POST" ,"GET"])
 def add_new_stock():
+    if (request.method == "GET"):
+        return render_template("add_new_stock.html")
     try:
         dictionary = request.form.to_dict()
     except RuntimeError as e:
@@ -208,6 +241,10 @@ def add_new_stock():
         dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
         dictionary["composition"] = ast.literal_eval(dictionary["composition"])  
     except ValueError as e:
+        print(f"Invalid price {e}")
+        error = f"{e} is an invalid number"
+        return error
+    except TypeError as e:
         print(f"Invalid price {e}")
         error = f"{e} is an invalid number"
         return error
@@ -283,57 +320,70 @@ def add_to_df(master_dictionary, message):
     object_df = pd.concat([object_df, dictionary_df])
 
     # Comitting df to the appropriate file
-    if (commit_df_to_storage(df = object_df, component = dictionary["item_type"])):
-        print("DF committed to storage")
+    df.to_csv(g.filepaths[dictionary["item_type"]])
+    print("DF committed to storage")
 
     return render_template("index.html", message = message)
 
-@app.route('/change_stock_page')
-def load_stock_page():
-    return render_template("change_stock_form.html")
-
-@app.route('/change_stock', methods=["POST"])
+@app.route('/change_stock', methods=["POST", "GET"])
 def change_stock():
+    if (request.method == "GET"):
+        return render_template("change_stock_form.html")
     try:
-        id = request.form.get("id")
-        component = request.form.get("component")
-    except RuntimeError as e:
-        print(f"Unable to request details {e}")
-    except Exception as e:
-        print(f"Unexpected Error: {e}")
+        # requesting the necessary files
+        try:
+            id = request.form.get("id")
+            component = request.form.get("component")
+        except RuntimeError as e:
+            error = f"Unable to request details {e}"
+            return render_template("error.html", message = error)
 
-    item_data = row_accesser(df_name = component, value=id)
-    obj = create_component_object(component=component, dictionary=item_data)
-    obj.part_stock.set_id(id)
-    change_details = obj.get_complete_details()
+        # requesting an object from the id and components and checking if it is valid
+        try:
+            item_data = row_accesser(df_name = component, value=id)
+            obj = create_component_object(component=component, dictionary=item_data)
+            obj.part_stock.set_id(id)
+            change_details = obj.get_complete_details()
+        except AttributeError as e:
+            error = f"Requested Operations are invalid {e}"
+            return render_template("error.html", message = error)
+
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return render_template("error.html", message = error)
+
+    # checking if the cookie exists
     if not "change_stock" in session:
         session["change_stock"] = []
+
+    # overwriting the cookie, just in case there is anything on it
     session["change_stock"] = change_details
     return render_template("change_stock.html", details=change_details)
 
 @app.route('/changer_grabber_and_verify', methods=["POST"])
 def get_change_stock():
     try:
-        dictionary = request.form.to_dict()
-    except RuntimeError as e:
-        print(f"Unable to request details {e}")
+        # requesting all the data from the page in a dictionary
+        try:
+            dictionary = request.form.to_dict()
+        except RuntimeError as e:
+            error = f"Unable to request details {e}"
+            return render_template("error.html", message = error)
+
+        # normalizing the all the data properly for insersion
+        try:
+            dictionary["price"] = float(dictionary["price"])
+            dictionary["vat"] = float(dictionary["vat"])
+            dictionary["weight"] = float(dictionary["weight"])
+            dictionary["quantity"] = int(dictionary["quantity"])
+            dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
+            dictionary["composition"] = ast.literal_eval(dictionary["composition"])  
+        except ValueError as e:
+            error = f"{e}: is an invalid number"
+            return render_template("error.html", message = error)
     except Exception as e:
-        print(f"Unexpected Error: {e}")
-    try:
-        dictionary["price"] = float(dictionary["price"])
-        dictionary["vat"] = float(dictionary["vat"])
-        dictionary["weight"] = float(dictionary["weight"])
-        dictionary["quantity"] = int(dictionary["quantity"])
-        dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
-        dictionary["composition"] = ast.literal_eval(dictionary["composition"])  
-    except ValueError as e:
-        print(f"Invalid price {e}")
-        error = f"{e}: is an invalid number"
-        return error
-    except Exception as e:
-        print(f"Unexpected Error: {e}")
-        error = f"{e} is an invalid number"
-        return error
+        error = f"Unexpected Error: {e}"
+        return render_template("error.html", message = error)
 
     missing_dict = find_missing_keys(dictionary, dictionary["item_type"])
     all_values = session["change_stock"]
@@ -346,20 +396,18 @@ def get_change_stock():
 
     return render_template("change_component_specific.html", dictionary=key_value_dict)
 
-def commit_df_to_storage(df, component):
-    df.to_csv(g.filepaths[component])
-    return True
-
-def edit_existing_values(master_dictionary,message):
-    print(f"Master Dictionary: {master_dictionary}")
+def edit_existing_values(master_dictionary,message=""):
+    # extracting the index to add it to the df properly
     index = master_dictionary.pop("id")
+    # extracting component name to call the appropriate df
     component = master_dictionary["item_type"]
+
+    #calling and changing the proper df
     df = g.dataframes[component]
     df.loc[index, master_dictionary.keys()] = master_dictionary.values()
-    print(f"ROW: {df.loc[index]}")
-    if commit_df_to_storage(df, component):
-        print("DF committed to storage")
-    print(f"Dataframe {df}")
+
+    #committing changes to the file
+    df.to_csv(g.filepaths[component])
     return render_template("index.html", message = message)
 
 @app.route('/change_component_specific', methods=["POST"])
@@ -368,10 +416,11 @@ def change_and_commit_stock():
     try:
         component_values = request.form.to_dict()
     except RuntimeError as e:
-        print(f"Unable to request details {e}")
+        error = f"Unable to request details {e}"
+        return render_template("error.html", message = error)
     except Exception as e:
-        print(f"Unexpected Error: {e}")
-
+        error = f"Unexpected Error: {e}"
+        return render_template("error.html", message = error)
 
     component_values.update(session["change_stock"])
     return edit_existing_values(master_dictionary=component_values, message="Item Changed Successfully")
@@ -390,7 +439,9 @@ def check_out_verify():
     for dicts in session["cart"]:
         # type checking incase data was not handeled properly during insersion
         try:
+            # calculating the total with vat for the check out process
             item_total = float(dicts["quantity"]) * float(dicts["price"])
+            item_total = item_total + item_total * float(dicts["vat"])
             dicts["item_total"] = item_total
         except TypeError as e:
             return "Cart has invalid Data"
@@ -443,6 +494,53 @@ def remove_item_from_cart():
     else:
         return render_template("index.html", cart_items=show_cart(), message="Unable to removed item from cart")
 
+def df_committer_post_purchase():
+    # checking if session["cart"] exists or not   
+    try:
+        if not session.get("cart"):
+            return "Unable to remove item from cart! Cart is empty"
+    except KeyError as e:
+        return "Unable to remove item from cart! Cart is empty"
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return 
+    for items in session["cart"]:
+        print(f"ITEMS FROM CART: {items}")
+        df = g.dataframes[items["item_type"]]
+        row = df.loc[items["id"]]
+        print(f"ITEM ID: {items["id"]} TYPE: {type(items["id"])}")
+        try:
+            row["price"] = float(row["price"])
+            row["vat"] = float(row["vat"])
+            row["weight"] = float(row["weight"])
+            row["quantity"] = int(row["quantity"])
+            row["dimensions"] = ast.literal_eval(row["dimensions"])
+            row["composition"] = ast.literal_eval(row["composition"])  
+        except ValueError as e:
+            print(f"Invalid price {e}")
+            error = f"{e}: is an invalid number"
+            return error
+        except Exception as e:
+            print(f"Unexpected Error: {e}")
+            error = f"{e} is an invalid number"
+            return error
+
+        obj = g.classes[items["item_type"]](**row)
+
+        try:
+            obj.part_stock.decrease_stock(int(items["quantity"]))
+            obj.part_stock.set_id(items["id"])
+        except TypeError as e:
+            print(f"TypeError: {e}")
+            print("session['cart'] contains invalid 'quantity' type")
+        except ValueError as e:
+            print(f"ValueError: {e}")
+            print("Unable to call StockItem.decrease_stock() to change stock as quantity value is invalid")
+        master_dict = obj.get_complete_details()
+        print(f"MASTER DICT BEFORE COMMIT: {master_dict}")
+        edit_existing_values(master_dict)
+        df.to_csv(g.filepaths[items["item_type"]])
+
 @app.route('/buy_page', methods=["POST"])
 def buy_page():
     return render_template("buy.html")
@@ -471,7 +569,7 @@ def buy():
     # used to create a dictionary with all the necessary fields to be added to the purchase_history csv    
     master_dictionary = {}
     master_dictionary.update(user_details)
-    csv_keys = ["customer_name", "phonenumber", "id", "name", "quantity", "item_type", "item_total"]
+    csv_keys = ["customer_name", "phonenumber", "id", "name", "quantity", "vat", "item_type", "item_total"]
     writer_list = []
     for items in session["cart"]:
         master_dictionary.update(items)
@@ -487,8 +585,40 @@ def buy():
         for rows in writer_list:
             writer = csv.DictWriter(file, fieldnames=csv_keys + ["time_stamp"])
             writer.writerow(rows)
+
+    # calls the fucntion that commits all the changes in the cart to storage
+    df_committer_post_purchase()
+
     # clears the current cart which also renders the home page
     return clear_cart()
 
-def df_committer_post_purchase():
-    pass
+@app.route('/remove_item', methods=["POST", "GET"])
+def remove_item():
+    if (request.method == "GET"):
+        return render_template("remove_item.html")
+
+    # requesting all the necessary files
+    try:
+        id = request.form.get("id")
+        component = request.form.get("component")
+    except RuntimeError as e:
+        error = f"Unable to request details: {e}"
+        return render_template("error.html", message = error)
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return render_template("error.html", message = error)
+
+    # trying to remove the row with the entered ID
+    try:
+        df = g.dataframes[component]
+        df = df.drop(id, axis = 0)
+    except KeyError as e:
+        error = f"Given Item ID does not exixt: {e} \n Did you specify the Component Properly?"
+        return render_template("error.html", message = error)
+    except Exception as e:
+        error = f"Unexpected Error:  {e}"
+        return render_template("error.html", message = error)
+
+    # commits the df to storage
+    df.to_csv(g.filepaths[component])
+    return render_template("index.html", message="Item Removed Successfully")
