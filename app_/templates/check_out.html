@@ -1,0 +1,38 @@
+{% extends "template.html"%}
+
+{% block title%}
+    Check Out
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Check Out</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Quantity</th>
+                <th>Per Item Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items%}
+            <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.id}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.price}}</td>
+                <td>{{item.item_total}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="text-center mt-4">
+    <form action="/buy_page" method="POST">
+        <button type="submit" class="btn btn-primary">Proceed</button>
+    </form>
+</div>
+{% endblock %}

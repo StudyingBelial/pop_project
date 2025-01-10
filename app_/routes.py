@@ -9,6 +9,7 @@ sys.path.append("..")
 import ast
 import csv
 import pandas as pd
+from datetime import datetime
 from library import StockItem, Engine, Transmission, Tire, Brake, Suspension, Paint, SeatAndCover, DecalAndTint, Battery, WiringHarness, Infotainment
 
 
@@ -96,23 +97,12 @@ def row_accesser(value, df_name):
     except Exception as e:
         print(f"Unexpected Error: {e}")
         return None
-    else:
-        # dictionary = {}
-        # for col, nested_dict in row.to_dict().items():
-        #     # Extract the value for the given row index
-        #     dictionary[col] = nested_dict.get(value)
-
-        # try:
-        #     dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
-        #     dictionary["composition"] = ast.literal_eval(dictionary["composition"])
-        # except (ValueError, SyntaxError) as e:
-        #     print(f"Error parsing dimensions or composition: {e}")
-        #     return None
-        dictionary = row.to_dict()
-        print(dictionary)
-        dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
-        dictionary["composition"] = ast.literal_eval(dictionary["composition"])
-        return dictionary
+    dictionary = row.to_dict()
+    print(dictionary)
+    dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
+    dictionary["composition"] = ast.literal_eval(dictionary["composition"])
+    true_quantity = dictionary["quantity"]
+    return dictionary, true_quantity
 
 def create_component_object(component,dictionary):
     try:
@@ -147,7 +137,7 @@ def render_cart():
 
 @app.route('/')
 def home():
-    return render_template("index.html")
+    return render_template("index.html", cart_items=show_cart())
 
 @app.route('/cart_by_id', methods=["POST"])
 def add_item_by_id():
@@ -161,25 +151,39 @@ def add_item_by_id():
     except Exception as e:
         print(f"Unexpected Error: {e}")
 
+    # Normalizes the quantity into an int
     try:
         quantity = int(quantity)
+        if (quantity < 1):
+            print("Normalized Negative quantity to 1")
+            quantity = 1
     except ValueError as e:
         print(f"Value Error: {e} quanitiy is invalid")
         quantity = 1
     except Exception as e:
         print(f"Unexpected Error: {e}")
-    item_data = row_accesser(df_name = component, value=item_search)
 
+    item_data, true_quantity = row_accesser(df_name = component, value=item_search)
+
+    # Checks if the item requested by the user exists in the database
     if item_data is None:
         print("Item not found")
         return "Item Not Found"
     else:
         print("Item FOUND")
 
+    # Checks if quantity asked by the user is valid
+    if (quantity > true_quantity):
+        print(f"Error! Requested Quantity Exceeds current stock")
+        print(f"Normalized quanity to max quantity in db")
+        quantity = true_quantity
+
+    # creating an  appropraite object of the data and checking if all the values align, as well as to set different values like id and quantity
     obj = create_component_object(component=component, dictionary=item_data)
     obj.part_stock.set_id(item_search)
     obj.part_stock.set_quantity(quantity)
     add_to_cart(obj.get_complete_details())
+
     return render_template("index.html", cart_items= show_cart())
 
 @app.route('/add_new_stock_page')
@@ -194,6 +198,8 @@ def add_new_stock():
         print(f"Unable to request details {e}")
     except Exception as e:
         print(f"Unexpected Error: {e}")
+
+    # Normalizing all the data to appropriately add into the db    
     try:
         dictionary["price"] = float(dictionary["price"])
         dictionary["vat"] = float(dictionary["vat"])
@@ -209,6 +215,16 @@ def add_new_stock():
         print(f"Unexpected Error: {e}")
         error = f"{e} is an invalid number"
         return error
+
+    # Normalizing the data into valid ranges
+    if (dictionary["price"] < 0):
+        dictionary["price"] = 1
+    if (dictionary["vat"] < 0):
+        dictionary["vat"] = 0
+    if (dictionary["weight"] < 1):
+        dictionary["weight"] = 1
+    if (dictionary["quantity"] < 1):
+        dictionary["quantity"] = 1
 
     missing_dict = find_missing_keys(dictionary, dictionary["item_type"])
     return render_template("new_component_specific.html", dictionary=missing_dict)
@@ -256,12 +272,20 @@ def add_new_component():
 def add_to_df(master_dictionary, message):
     obj = create_component_object(component = master_dictionary["item_type"], dictionary=master_dictionary)
     print(f"OBJECT CREATED SUCCESSFULLY {obj}")
+
     # ADDING THE NEW OBJECT DATA TO THE DATAFRAMES AND THEN INTO A FILE
     dictionary = obj.get_complete_details()
+
+    #creating a new df with all the necessary fields
     dictionary_df = pd.DataFrame([dictionary]).set_index("id")
     object_df = g.dataframes[dictionary["item_type"]]
+    # concatenating the new df with the old df which has all the data
     object_df = pd.concat([object_df, dictionary_df])
-    object_df.to_csv(g.filepaths[dictionary["item_type"]])
+
+    # Comitting df to the appropriate file
+    if (commit_df_to_storage(df = object_df, component = dictionary["item_type"])):
+        print("DF committed to storage")
+
     return render_template("index.html", message = message)
 
 @app.route('/change_stock_page')
@@ -291,7 +315,6 @@ def change_stock():
 def get_change_stock():
     try:
         dictionary = request.form.to_dict()
-        print(dictionary)
     except RuntimeError as e:
         print(f"Unable to request details {e}")
     except Exception as e:
@@ -341,11 +364,131 @@ def edit_existing_values(master_dictionary,message):
 
 @app.route('/change_component_specific', methods=["POST"])
 def change_and_commit_stock():
+    # error handelling to see if request from the previous page works
     try:
         component_values = request.form.to_dict()
     except RuntimeError as e:
         print(f"Unable to request details {e}")
     except Exception as e:
         print(f"Unexpected Error: {e}")
+
+
     component_values.update(session["change_stock"])
     return edit_existing_values(master_dictionary=component_values, message="Item Changed Successfully")
+
+@app.route('/check_out_verify')
+def check_out_verify():
+    # checking the cart before any code is run with session["cart"]
+    try:
+        if not session.get("cart"):
+            return "Cart is empty"
+    except KeyError as e:
+        return "Cart is empty"
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return error
+    for dicts in session["cart"]:
+        # type checking incase data was not handeled properly during insersion
+        try:
+            item_total = float(dicts["quantity"]) * float(dicts["price"])
+            dicts["item_total"] = item_total
+        except TypeError as e:
+            return "Cart has invalid Data"
+        except Exception as e:
+            error = f"Unexpected Error: {e}"
+            return error
+    session.modified = True
+    return render_template("check_out.html", cart_items=session["cart"])
+
+@app.route('/remove_item_from_cart', methods=["GET"])
+def remove_item_from_cart():
+    # requesting id of the item to be removed
+    item_id = request.args.get("item_id")
+    if not item_id:
+        return "Unable to remove item from cart"
+
+    # checking if session["cart"] exists or not     
+    try:
+        if not session.get("cart"):
+            return "Unable to remove item from cart! Cart is empty"
+    except KeyError as e:
+        return "Unable to remove item from cart! Cart is empty"
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return error
+
+    item_found = False
+    new_cart = []
+
+    # looping through to cart to find the id of the requested removal
+    for item in session["cart"]:
+        try:
+            if str(item.get("id")) == str(item_id):
+                item_found = True
+            else:
+                new_cart.append(item)
+        except KeyError as e:
+            return "Requested Item does not exist in cart"
+        except Exception as e:
+            error = f"Unexpected Error: {e}"
+            return error
+
+    # updating the new cart       
+    session["cart"] = new_cart
+    session.modified = True
+
+    # rendering the home page with the appropriate message according to how the code was executed
+    if item_found:
+        return render_template("index.html", cart_items=show_cart(), message="Item removed from cart")
+    else:
+        return render_template("index.html", cart_items=show_cart(), message="Unable to removed item from cart")
+
+@app.route('/buy_page', methods=["POST"])
+def buy_page():
+    return render_template("buy.html")
+
+@app.route('/buy' , methods=["POST"])
+def buy():
+    # file path for the main file with the purchase history
+    BUY_HISTORY_PATH = ".\\app_\\data\\purchase_history.csv"
+    try:
+        user_details = request.form.to_dict()
+    except RuntimeError as e:
+        print(f"Unable to request details {e}")
+    except Exception as e:
+        print(f"Unexpected Error: {e}")
+
+    # checking if session["cart"] exists or not   
+    try:
+        if not session.get("cart"):
+            return "Unable to remove item from cart! Cart is empty"
+    except KeyError as e:
+        return "Unable to remove item from cart! Cart is empty"
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return 
+
+    # used to create a dictionary with all the necessary fields to be added to the purchase_history csv    
+    master_dictionary = {}
+    master_dictionary.update(user_details)
+    csv_keys = ["customer_name", "phonenumber", "id", "name", "quantity", "item_type", "item_total"]
+    writer_list = []
+    for items in session["cart"]:
+        master_dictionary.update(items)
+        csv_dictionary = {}
+        for key in csv_keys:
+            value = master_dictionary.get(key)
+            csv_dictionary[key] = value
+        csv_dictionary["time_stamp"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        writer_list.append(csv_dictionary)
+
+    # writes the necessay details in purchase_history csv
+    with open (BUY_HISTORY_PATH, mode="a", newline="") as file:
+        for rows in writer_list:
+            writer = csv.DictWriter(file, fieldnames=csv_keys + ["time_stamp"])
+            writer.writerow(rows)
+    # clears the current cart which also renders the home page
+    return clear_cart()
+
+def df_committer_post_purchase():
+    pass

@@ -1,0 +1,25 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Buy
+{% endblock %}
+
+{% block content %}
+<div class="container border rounded shadow p-4 mt-5 col-12 col-md-6 col-lg-4">
+    <form action="/buy" method="POST">
+        <div class="row mb-3 d-flex justify-content-center">
+            <div class="col-sm-12 col-md-12 col-lg-12 mx-1">
+                <label class="form-label" for="customer_name">Name</label>
+                <input type="text" class="form-control" name="customer_name" id="customer_name" required>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-12 mx-1">
+                <label class="form-label" for="phonenumber">Phone Number</label>
+                <input type="text" class="form-control" name="phonenumber" id="phonenumber" required>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Buy</button>
+        </div>
+    </form>
+</div>
+{% endblock%}
