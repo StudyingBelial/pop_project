@@ -1,0 +1,45 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Increase Stock
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center">
+    <h3>{{message}}</h3>
+</div>
+<div class="container border rounded shadow p-4 mt-5 col-12 col-md-6 col-lg-4">
+    <form action="/increase_stock" method="POST">
+        <div class="mb-3 d-flex justify-content-center">
+            <div class="col-sm-8 col-md-8 col-lg-8 mx-1">
+                <label class="form-label" for="id">Item ID</label>
+                <input type="text" class="form-control" name="id" id="id" required placeholder="Item Id">
+            </div>
+            <div class="col-sm-4 col-md-4 col-lg-4 mx-1">
+                <label class="form-label" for="quantity">Increase Quantity</label>
+                <input type="number" class="form-control" name="quantity" id="quantity" required placeholder="Quantity">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="component">Component Type</label>
+            <select class="form-select" id="component" name="component" required>
+                <option value="" disabled selected>Select Option</option>
+                <option value="engine">Engine</option>
+                <option value="transmission">Transmission</option>
+                <option value="tire">Tire</option>
+                <option value="brake">Brake</option>
+                <option value="suspension">Suspension</option>
+                <option value="paint">Paint</option>
+                <option value="seat_and_cover">Seat and Cover</option>
+                <option value="decal_and_tint">Decal and Tint</option>
+                <option value="battery">Battery</option>
+                <option value="wiringharness">Wiring Harness</option>
+                <option value="infotainment">Infotainment</option>
+            </select>
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

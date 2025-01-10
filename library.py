@@ -169,7 +169,7 @@ class PowerChain(MaterialProperty):
         fuel_type = None,
         fuel_efficiency = None,
         engine_type = None,
-        transimission_type = None
+        transmission_type = None
         ):
         self.set_weight(weight)
         self.set_dimensions(dimensions)
@@ -180,7 +180,7 @@ class PowerChain(MaterialProperty):
         self.set_fuel_type(fuel_type)
         self.set_fuel_efficiency(fuel_efficiency)
         self.set_engine_type(engine_type)
-        self.set_transimission_type(transimission_type)
+        self.set_transmission_type(transmission_type)
 
     def set_torque(self, torque):
         self.material_type_check(torque, (int, float, str), "torque in Nm")
@@ -202,9 +202,9 @@ class PowerChain(MaterialProperty):
         self.material_type_check(engine_type, (str, type(None)), "engine_type")
         self.engine_type = engine_type
 
-    def set_transimission_type(self, transimission_type):
-        self.material_type_check(transimission_type, (str, type(None)), "transimission_type")
-        self.transimission_type = transimission_type
+    def set_transmission_type(self, transmission_type):
+        self.material_type_check(transmission_type, (str, type(None)), "transmission_type")
+        self.transmission_type = transmission_type
 
     def get_torque(self):
         return getattr(self, "torque", None)
@@ -308,7 +308,7 @@ class Transmission:
         durability = "undefined",
         torque = 0.0,
         horsepower = 0.0,
-        transimission_type = "undefined"
+        transmission_type = "undefined"
     ):
         self.part_stock = StockItem(
             id=id, 
@@ -327,7 +327,7 @@ class Transmission:
             durability=durability, 
             torque=torque, 
             horsepower=horsepower, 
-            transimission_type=transimission_type
+            transmission_type=transmission_type
         )
 
     def get_complete_details(self):
