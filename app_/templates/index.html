@@ -1,97 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <title>POS</title>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">POS</a>
-            <div class="collapse navbar-collapse justify-content-end">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary mx-1" href="/show_cart">
-                            <span class="bi bi-cart m-1"></span>Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary mx-1" href="/clear_cart">
-                            <span class="bi bi-trash m-1"></span>Clear Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary mx-1" href="/add_new_stock_page">
-                            <span class="bi bi-plus-circle m-1"></span>Add New Stock</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary mx-1" href="/change_stock_page">
-                            <span class="bi bi-envelope m-1"></span>Change Stock</a>
-                    </li>
-                </ul>
-                </ul>
+{% extends "template.html" %}
+
+{% block title%}
+POS
+{% endblock %}
+
+{% block content%}
+    <div class="d-flex justify-content-center align-items-center">
+        <h3>{{message}}</h3>
+    </div>
+    <div class="container border rounded shadow p-4 mt-5 col-12 col-md-6 col-lg-4">
+        <form action="/cart_by_id" method="POST">
+            <div class="mb-3 d-flex justify-content-center">
+                <div class="col-sm-8 col-md-8 col-lg-8 mx-1">
+                    <label class="form-label" for="item_search">Search</label>
+                    <input type="text" class="form-control" name="item_search" id="item_search" required placeholder="Item Id">
+                </div>
+                <div class="col-sm-4 col-md-4 col-lg-4 mx-1">
+                    <label class="form-label" for="quantity">Quantity</label>
+                    <input type="number" class="form-control" name="quantity" id="quantity" required placeholder="Quantity">
+                </div>
             </div>
-        </div>
-    </nav>
-    <main>
-        <div class="d-flex justify-content-center align-items-center">
-            <h3>{{message}}</h3>
-        </div>
-        <div class="container border rounded shadow p-4 mt-5 col-12 col-md-6 col-lg-4">
-            <form action="/cart_by_id" method="POST">
-                <div class="mb-3 d-flex justify-content-center">
-                    <div class="col-sm-8 col-md-8 col-lg-8 mx-1">
-                        <label class="form-label" for="item_search">Search</label>
-                        <input type="text" class="form-control" name="item_search" id="item_search" required placeholder="Item Id">
-                    </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 mx-1">
-                        <label class="form-label" for="quantity">Quantity</label>
-                        <input type="number" class="form-control" name="quantity" id="quantity" required placeholder="Quantity">
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="component">Component Type</label>
-                    <select class="form-select" id="component" name="component" required>
-                        <option value="" disabled selected>Select Option</option>
-                        <option value="engine">Engine</option>
-                        <option value="transmission">Transmission</option>
-                        <option value="tire">Tire</option>
-                        <option value="brake">Brake</option>
-                        <option value="suspension">Suspension</option>
-                        <option value="paint">Paint</option>
-                        <option value="seatandcover">Seat and Cover</option>
-                        <option value="decalandtint">Decal and Tint</option>
-                        <option value="battery">Battery</option>
-                        <option value="wiringharness">Wiring Harness</option>
-                        <option value="infotainment">Infotainment</option>
-                    </select>
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </div>
-            </form>
-        </div>
-        <div class="container mt-5">
-            <div class="row">
-                    {% for item in cart_items%}
-                        <div class="col-12 mb-2">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Part Name:{{item.name}}</h5>
-                                    <h6>ID: {{item.id}}</h6>
-                                    <p class="card-text">Per Part Cost: {{item.price}}</p>
-                                    <p class="card_text">Quantity: {{item.quantity}}</p>
-                                    <p class="card_text">VAT: {{item.vat}}</p>
-                                    <a href="#" class="btn btn-secondary" class="text-decoration-none">Change</a>
-                                    <a href="#" class="btn btn-secondary" class="text-decoration-none">Remove</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                <!-- NEW CARD HERE -->
+            <div class="mb-3">
+                <label class="form-label" for="component">Component Type</label>
+                <select class="form-select" id="component" name="component" required>
+                    <option value="" disabled selected>Select Option</option>
+                    <option value="engine">Engine</option>
+                    <option value="transmission">Transmission</option>
+                    <option value="tire">Tire</option>
+                    <option value="brake">Brake</option>
+                    <option value="suspension">Suspension</option>
+                    <option value="paint">Paint</option>
+                    <option value="seatandcover">Seat and Cover</option>
+                    <option value="decalandtint">Decal and Tint</option>
+                    <option value="battery">Battery</option>
+                    <option value="wiringharness">Wiring Harness</option>
+                    <option value="infotainment">Infotainment</option>
+                </select>
             </div>
-        </div>
-    </main>
-</body>
-</html>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+{% include "cart_template.html" %}
+{% endblock %}
