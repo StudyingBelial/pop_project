@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Add New Stock</title>
+</head>
+<body>
+    <div class="container border rounded shadow p-4 mt-5 col-12 col-md-6 col-lg-4">
+        <form action="/add_new_item" method="POST">
+            <div class="row mb-3 d-flex justify-content-center">
+                <div class="text-center col-sm-12 col-md-12 col-lg-12">
+                    <h2>Add New Stock</h2>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="id">Id</label>
+                    <input type="text" class="form-control" name="id" id="id" required placeholder="Item Id">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="name">Name</label>
+                    <input type="text" class="form-control" name="name" id="name" required placeholder="Item Name">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="quantity">Quantity</label>
+                    <input type="number" class="form-control" name="quantity" id="quantity" required placeholder="Item Quantity">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="price">Price</label>
+                    <input type="text" class="form-control" name="price" id="price" required placeholder="Item Price">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="description">Description</label>
+                    <input type="text" class="form-control" name="description" id="description" required placeholder="Item Description">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="item_type">Component Type</label>
+                    <select class="form-select" id="item_type" name="item_type" required>
+                        <option value="" disabled selected>Select Option</option>
+                        <option value="engine">Engine</option>
+                        <option value="transmission">Transmission</option>
+                        <option value="tire">Tire</option>
+                        <option value="brake">Brake</option>
+                        <option value="suspension">Suspension</option>
+                        <option value="paint">Paint</option>
+                        <option value="seatandcover">Seat and Cover</option>
+                        <option value="decalandtint">Decal and Tint</option>
+                        <option value="battery">Battery</option>
+                        <option value="wiringharness">Wiring Harness</option>
+                        <option value="infotainment">Infotainment</option>
+                    </select>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="brand">Brand</label>
+                    <input type="text" class="form-control" name="brand" id="brand" required placeholder="Item Brand">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="vat">Vat</label>
+                    <input type="text" class="form-control" name="vat" id="vat" required placeholder="Item Vat">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="weight">Weight in KG</label>
+                    <input type="text" class="form-control" name="weight" id="weight" required placeholder="Weight in KG">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="dimensions">Dimensions in CM</label>
+                    <input type="text" class="form-control" name="dimensions" id="dimensions" required placeholder="Dimensions in CM">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 m-1">
+                    <label class="form-label" for="composition">Composition as Key Value Pairs</label>
+                    <input type="text" class="form-control" name="composition" id="composition" required placeholder="Composition as Key Value Pairs">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="durability">Durability</label>
+                    <select class="form-select" id="durability" name="durability" required>
+                        <option value="" disabled selected>Select Option</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                        <option value="undefined">Undefined</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

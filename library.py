@@ -183,11 +183,11 @@ class PowerChain(MaterialProperty):
         self.set_transimission_type(transimission_type)
 
     def set_torque(self, torque):
-        self.material_type_check(torque, (int, float), "torque in Nm")
+        self.material_type_check(torque, (int, float, str), "torque in Nm")
         self.torque = torque
 
     def set_horsepower(self, horsepower):
-        self.material_type_check(horsepower, (int, float), "horsepower in HP")
+        self.material_type_check(horsepower, (int, float, str), "horsepower in HP")
         self.horsepower = horsepower
 
     def set_fuel_type(self, fuel_type):
@@ -195,7 +195,7 @@ class PowerChain(MaterialProperty):
         self.fuel_type = fuel_type
 
     def set_fuel_efficiency(self, fuel_efficiency):
-        self.material_type_check(fuel_efficiency, (int, float, type(None)), "fuel_efficiency in kWh")
+        self.material_type_check(fuel_efficiency, (str, int, float, type(None)), "fuel_efficiency in kWh")
         self.fuel_efficiency = fuel_efficiency
 
     def set_engine_type(self, engine_type):
@@ -258,19 +258,37 @@ class Engine:
         fuel_efficiency = 0.0,
         engine_type = "undefined"
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = PowerChain(weight, dimensions, composition, durability, torque, horsepower, fuel_type, fuel_efficiency,engine_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = PowerChain(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            torque=torque, 
+            horsepower=horsepower, 
+            fuel_type=fuel_type, 
+            fuel_efficiency=fuel_efficiency, 
+            engine_type=engine_type
+        )
 
-    def get_engine_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_engine_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_engine_details(self):
-        stock = self.get_engine_stock()
-        quality = self.get_engine_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class Transmission:
@@ -292,25 +310,41 @@ class Transmission:
         horsepower = 0.0,
         transimission_type = "undefined"
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = PowerChain(weight, dimensions, composition, durability, torque, horsepower, transimission_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = PowerChain(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            torque=torque, 
+            horsepower=horsepower, 
+            transimission_type=transimission_type
+        )
 
-    def get_transmission_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_transmission_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_transmission_details(self):
-        stock = self.get_transmission_stock()
-        quality = self.get_transmission_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class Chassis(MaterialProperty):
     def __init__(
         self,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -323,7 +357,7 @@ class Chassis(MaterialProperty):
     ):
         self.set_weight(weight)
         self.set_dimensions(dimensions)
-        self.set_composition(composition)
+        self.set_material_composition(composition)
         self.set_durability(durability)
         self.set_load_capacity(load_capacity)
         self.set_max_strain(max_strain)
@@ -333,15 +367,15 @@ class Chassis(MaterialProperty):
         self.set_brake_type(brake_type)
 
     def set_load_capacity(self, load_capacity):
-        self.material_type_check(load_capacity, (int, float), "load_capacity in kg")
+        self.material_type_check(load_capacity, (int, float, str), "load_capacity in kg")
         self.load_capacity = load_capacity
 
     def set_max_strain(self, max_strain):
-        self.material_type_check(max_strain, (int, float, type(None)), "max_strain in numeric SI")
+        self.material_type_check(max_strain, (int, float, str, type(None)), "max_strain in numeric SI")
         self.max_strain = max_strain
 
     def set_max_stress(self, max_stress):
-        self.material_type_check(max_stress, (int, float, type(None)), "max_stress in numeric SI")
+        self.material_type_check(max_stress, (int, float, str, type(None)), "max_stress in numeric SI")
         self.max_stress = max_stress
 
     def set_tire_type(self, tire_type):
@@ -398,7 +432,7 @@ class Tire:
         item_type = "tire", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -406,24 +440,39 @@ class Tire:
         max_stress = 0.0,
         tire_type = "undefined"
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = Chassis(weight, dimensions, composition, durability, load_capacity, max_stress, tire_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = Chassis(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            load_capacity=load_capacity, 
+            max_stress=max_stress, 
+            tire_type=tire_type
+        )
 
-    def get_tire_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_tire_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_tire_details(self):
-        stock = self.get_tire_stock()
-        quality = self.get_tire_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class Brake:
-    class Brake:
-        def __init__(
+    def __init__(
             self,
             id = "N/A",
             name = "Unknown Stock Name",
@@ -433,31 +482,45 @@ class Brake:
             item_type = "brake", 
             brand = "N/A", 
             vat = 17.5,
-            weight = 0.0,
+            weight = 1.0,
             dimensions = (0.0,0.0,0.0),
             composition = {"undefined": 0},
             durability = "undefined",
             max_stress = 0.0,
             brake_type = "undefined"
         ):
-            self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-            self.part_property = Chassis(weight, dimensions, composition, durability, max_stress, brake_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = Chassis(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            max_stress=max_stress, 
+            brake_type=brake_type
+        )
 
-        def get_brake_stock(self):
-            return self.part_stock.get_stock_details()
-
-        def get_brake_property(self):
-            return self.part_property.get_material_property()
-
-        def get_complete_brake_details(self):
-            stock = self.get_brake_stock()
-            quality = self.get_brake_property()
-            stock.update(quality)
-            return stock
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
+        stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
+        return stock
 
 class Suspension:
-    class Suspension:
-        def __init__(
+    def __init__(
             self,
             id = "N/A",
             name = "Unknown Stock Name",
@@ -467,27 +530,42 @@ class Suspension:
             item_type = "suspension", 
             brand = "N/A", 
             vat = 17.5,
-            weight = 0.0,
+            weight = 1.0,
             dimensions = (0.0,0.0,0.0),
             composition = {"undefined": 0},
             durability = "undefined",
             max_stress = 0.0,
             suspension_type = "undefined"
         ):
-            self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-            self.part_property = Chassis(weight, dimensions, composition, durability, max_stress, suspension_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = Chassis(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            max_stress=max_stress, 
+            suspension_type=suspension_type
+        )
 
-        def get_suspension_stock(self):
-            return self.part_stock.get_stock_details()
-
-        def get_suspension_property(self):
-            return self.part_property.get_material_property()
-
-        def get_complete_suspension_details(self):
-            stock = self.get_suspension_stock()
-            quality = self.get_suspension_property()
-            stock.update(quality)
-            return stock
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
+        stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
+        return stock
 
 class Detailing(MaterialProperty):
     def __init__(
@@ -504,13 +582,17 @@ class Detailing(MaterialProperty):
     ):
         self.set_weight(weight)
         self.set_dimensions(dimensions)
-        self.set_composition(composition)
+        self.set_material_composition(composition)
         self.set_durability(durability)
         self.set_primary_color(primary_color)
         self.set_secondary_color(secondary_color)
         self.set_finish(finish)
         self.set_texture(texture)
         self.set_protection_type(protection_type)
+
+    def set_finish(self, finish):
+        self.material_type_check(finish, str, "finish")
+        self.finish = finish
 
     def set_primary_color(self, primary_color):
         self.material_type_check(primary_color, str, "primary_color")
@@ -566,25 +648,39 @@ class Paint:
         item_type = "paint", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
         primary_color = "",
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = Chassis(weight, dimensions, composition, durability, primary_color)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = Detailing(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            primary_color=primary_color
+        )
 
-    def get_paint_stock(self):
-            return self.part_stock.get_stock_details()
-
-    def get_paint_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_paint_details(self):
-        stock = self.get_suspension_stock()
-        quality = self.get_suspension_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class SeatAndCover:
@@ -598,7 +694,7 @@ class SeatAndCover:
         item_type = "seatandcover", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0, 0.0, 0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -607,19 +703,36 @@ class SeatAndCover:
         finish = "",
         protection_type = "",
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = Detailing(weight, dimensions, composition, durability, primary_color, secondary_color, finish, protection_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = Detailing(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            primary_color=primary_color, 
+            secondary_color=secondary_color, 
+            finish=finish, 
+            protection_type=protection_type
+        )
 
-    def get_seats_and_covers_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_seats_and_covers_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_seats_and_covers_details(self):
-        stock = self.get_seats_and_covers_stock()
-        quality = self.get_seats_and_covers_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class DecalAndTint:
@@ -633,7 +746,7 @@ class DecalAndTint:
         item_type = "decalandtint", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0, 0.0, 0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -642,25 +755,42 @@ class DecalAndTint:
         finish = "",
         protection_type = "",
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = Detailing(weight, dimensions, composition, durability, primary_color, secondary_color, finish, protection_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = Detailing(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            primary_color=primary_color, 
+            secondary_color=secondary_color, 
+            finish=finish, 
+            protection_type=protection_type
+        )
 
-    def get_decal_and_tint_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_decal_and_tint_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_decal_and_tint_details(self):
-        stock = self.get_decal_and_tint_stock()
-        quality = self.get_decal_and_tint_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class ElectricalSystem(MaterialProperty):
     def __init__(
         self, 
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -670,11 +800,11 @@ class ElectricalSystem(MaterialProperty):
         avg_lifespan = 0,
         temperature_rating = None,
         battery_type = None,
-        display_type = None
+        display_type = None,
     ):
         self.set_weight(weight)
         self.set_dimensions(dimensions)
-        self.set_composition(composition)
+        self.set_material_composition(composition)
         self.set_durability(durability)
         self.set_voltage(voltage)
         self.set_amperage(amperage)
@@ -683,22 +813,21 @@ class ElectricalSystem(MaterialProperty):
         self.set_avg_lifespan(avg_lifespan)
         self.set_battery_type(battery_type)
         self.set_display_type(display_type)
-        self.get_power_efficiency()
 
     def set_voltage(self, voltage):
-        self.material_type_check(voltage, (int, float), "voltage in V")
+        self.material_type_check(voltage, (int, float, str), "voltage in V")
         self.voltage = voltage
 
     def set_amperage(self, amperage):
-        self.material_type_check(amperage, (int, float), "amperage in A")
+        self.material_type_check(amperage, (int, float, str), "amperage in A")
         self.amperage = amperage
 
     def set_power_inout(self, power_inout):
-        self.material_type_check(power_inout, (int, float), "power_inout in W")
+        self.material_type_check(power_inout, (int, float, str), "power_inout in W")
         self.power_inout = power_inout
 
     def set_temperature_rating(self, temperature_rating):
-        self.material_type_check(temperature_rating, (int, float, type(None)), "temperature_rating in C")
+        self.material_type_check(temperature_rating, (int, float, str, type(None)), "temperature_rating in C")
         self.temperature_rating = temperature_rating
 
     def set_avg_lifespan(self, avg_lifespan):
@@ -749,7 +878,6 @@ class ElectricalSystem(MaterialProperty):
             "power_inout": self.get_power_inout(),
             "temperature_rating": self.get_temperature_rating(),
             "avg_lifespan": self.get_avg_lifespan(),
-            "power_efficiency": self.get_power_efficiency(),
             "battery_type": self.battery_type,
             "display_type": self.display_type
         }
@@ -767,7 +895,7 @@ class Battery:
         item_type = "battery", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -778,19 +906,38 @@ class Battery:
         temperature_rating = 50.0,
         battery_type = ""
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = Chassis(weight, dimensions, composition, durability, voltage, amperage, power_inout, avg_lifespan, temperature_rating, battery_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = ElectricalSystem(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            voltage=voltage, 
+            amperage=amperage, 
+            power_inout=power_inout, 
+            avg_lifespan=avg_lifespan, 
+            temperature_rating=temperature_rating, 
+            battery_type=battery_type
+        )
 
-    def get_battery_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_battery_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_battery_details(self):
-        stock = self.get_battery_stock()
-        quality = self.get_battery_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class WiringHarness:
@@ -804,7 +951,7 @@ class WiringHarness:
         item_type = "wiringharness", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -814,19 +961,37 @@ class WiringHarness:
         avg_lifespan = 0,
         temperature_rating = 50.0
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = ElectricalSystem(weight, dimensions, composition, durability, voltage, amperage, power_inout, avg_lifespan, temperature_rating)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = ElectricalSystem(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            voltage=voltage, 
+            amperage=amperage, 
+            power_inout=power_inout, 
+            avg_lifespan=avg_lifespan, 
+            temperature_rating=temperature_rating
+        )
 
-    def get_wiring_harness_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_wiring_harness_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_wiring_harness_details(self):
-        stock = self.get_wiring_harness_stock()
-        quality = self.get_wiring_harness_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
 
 class Infotainment:
@@ -840,7 +1005,7 @@ class Infotainment:
         item_type = "infotainment", 
         brand = "N/A", 
         vat = 17.5,
-        weight = 0.0,
+        weight = 1.0,
         dimensions = (0.0,0.0,0.0),
         composition = {"undefined": 0},
         durability = "undefined",
@@ -851,17 +1016,70 @@ class Infotainment:
         temperature_rating = 50.0,
         display_type = ""
     ):
-        self.part_stock = StockItem(id, name, quantity, price, description, item_type, brand, vat)
-        self.part_property = ElectricalSystem(weight, dimensions, composition, durability, voltage, amperage, power_inout, avg_lifespan, temperature_rating, display_type)
+        self.part_stock = StockItem(
+            id=id, 
+            name=name, 
+            quantity=quantity, 
+            price=price, 
+            description=description, 
+            item_type=item_type, 
+            brand=brand, 
+            vat=vat
+        )
+        self.part_property = ElectricalSystem(
+            weight=weight, 
+            dimensions=dimensions, 
+            composition=composition, 
+            durability=durability, 
+            voltage=voltage, 
+            amperage=amperage, 
+            power_inout=power_inout, 
+            avg_lifespan=avg_lifespan, 
+            temperature_rating=temperature_rating, 
+            display_type=display_type
+        )
 
-    def get_infotainment_stock(self):
-        return self.part_stock.get_stock_details()
-
-    def get_infotainment_property(self):
-        return self.part_property.get_material_property()
-
-    def get_complete_infotainment_details(self):
-        stock = self.get_infotainment_stock()
-        quality = self.get_infotainment_property()
+    def get_complete_details(self):
+        stock = self.part_stock.get_stock_details()
+        quality = self.part_property.get_material_property()
         stock.update(quality)
+        filtered_stock = {}
+        for k, v in stock.items():
+            if v is not None:
+                filtered_stock[k] = v
+        stock = filtered_stock
         return stock
+
+
+# Engine object
+engine = Engine()
+
+# Transmission object
+transmission = Transmission()
+
+# Tire object
+tire = Tire()
+
+# Brake object
+brake = Brake()
+
+# Suspension object
+suspension = Suspension()
+
+# Paint object
+paint = Paint()
+
+# SeatAndCover object
+seat_and_cover = SeatAndCover()
+
+# DecalAndTint object
+decal_and_tint = DecalAndTint()
+
+# Battery object
+battery = Battery()
+
+# WiringHarness object
+wiring_harness = WiringHarness()
+
+# Infotainment object
+infotainment = Infotainment()
