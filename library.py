@@ -195,28 +195,28 @@ class StockItem:
             raise ValueError("Cannot Decrease Stock more than What is available")
 
     def get_id(self):
-        return getattr(self, "__id", None)
+        return getattr(self, "_StockItem__id", None)
 
     def get_name(self):
-        return getattr(self, "__name", None)
+        return getattr(self, "_StockItem__name", None)
 
     def get_quantity(self):
-        return getattr(self, "__quantity", None)
+        return getattr(self, "_StockItem__quantity", None)
 
     def get_price(self):
-        return getattr(self, "__price", None)
+        return getattr(self, "_StockItem__price", None)
 
     def get_description(self):
-        return getattr(self, "__description", None)
+        return getattr(self, "_StockItem__description", None)
 
     def get_item_type(self):
-        return getattr(self, "__item_type", None)
+        return getattr(self, "_StockItem__item_type", None)
 
     def get_brand(self):
-        return getattr(self, "__brand", None)
+        return getattr(self, "_StockItem__brand", None)
 
     def get_vat(self):
-        return getattr(self, "__vat", None)
+        return getattr(self, "_StockItem__vat", None)
 
     def get_stock_details(self):
         return {
@@ -242,7 +242,7 @@ class MaterialProperty:
         self.material_type_check(weight, (int, float), "weight")
         if (weight <= 0):
             raise ValueError("Weight cannot be Zero or negative")
-        self.weight = weight
+        self.__weight = weight
 
     def set_dimensions(self, dimension_tuple):
         self.material_type_check(dimension_tuple, tuple, "dimension_tuple")
@@ -250,32 +250,32 @@ class MaterialProperty:
             self.material_type_check(value, (int, float), "dimension_value")
         if (len(dimension_tuple) != 3):
             raise ValueError("{dimension_tuple} can only have 3 values")
-        self.dimensions = dimension_tuple
+        self.__dimensions = dimension_tuple
 
     def set_material_composition(self, composition_dict):
         self.material_type_check(composition_dict, dict, "composition_dict")
         for key, value in composition_dict.items():
             self.material_type_check(key, str, "material_type")
             self.material_type_check(value, (int, float), "material_proportion")
-        self.composition = composition_dict
+        self.__composition = composition_dict
 
     def set_durability(self, durability):
         self.material_type_check(durability, str, "durability")
         if durability not in ["high", "medium", "low", "undefined"]:
             raise ValueError("Durability must be 'high', 'medium', 'low', or 'undefined'")
-        self.durability = durability
+        self.__durability = durability
 
     def get_weight(self):
-        return getattr(self, "weight", None)
+        return getattr(self, "_MaterialProperty__weight", None)
 
     def get_dimensions(self):
-        return getattr(self, "dimensions", None)
+        return getattr(self, "_MaterialProperty__dimensions", None)
 
     def get_material_composition(self):
-        return getattr(self, "composition", None)
+        return getattr(self, "_MaterialProperty__composition", None)
 
     def get_durability(self):
-        return getattr(self, "durability", None)
+        return getattr(self, "_MaterialProperty__durability", None)
 
     def get_material_property(self):
         return {
@@ -335,22 +335,22 @@ class PowerChain(MaterialProperty):
         self.__transmission_type = transmission_type
 
     def get_torque(self):
-        return getattr(self, "__torque", None)
+        return getattr(self, "_PowerChain__torque", None)
 
     def get_horsepower(self):
-        return getattr(self, "__horsepower", None)
+        return getattr(self, "_PowerChain__horsepower", None)
 
     def get_fuel_type(self):
-        return getattr(self, "__fuel_type", None)
+        return getattr(self, "_PowerChain__fuel_type", None)
 
     def get_fuel_efficiency(self):
-        return getattr(self, "__fuel_efficiency", None)
+        return getattr(self, "_PowerChain__fuel_efficiency", None)
 
     def get_engine_type(self):
-        return getattr(self, "__engine_type", None)
+        return getattr(self, "_PowerChain__engine_type", None)
 
     def get_transmission_type(self):
-        return getattr(self, "__transmission_type", None)
+        return getattr(self, "_PowerChain__transmission_type", None)
 
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
@@ -519,22 +519,22 @@ class Chassis(MaterialProperty):
         self.__brake_type = brake_type
 
     def get_load_capacity(self):
-        return getattr(self, "__load_capacity", None)
+        return getattr(self, "_Chassis__load_capacity", None)
 
     def get_max_strain(self):
-        return getattr(self, "__max_strain", None)
+        return getattr(self, "_Chassis__max_strain", None)
 
     def get_max_stress(self):
-        return getattr(self, "__max_stress", None)
+        return getattr(self, "_Chassis__max_stress", None)
 
     def get_tire_type(self):
-        return getattr(self, "__tire_type", None)
+        return getattr(self, "_Chassis__tire_type", None)
 
     def get_suspension_type(self):
-        return getattr(self, "__suspension_type", None)
+        return getattr(self, "_Chassis__suspension_type", None)
 
     def get_brake_type(self):
-        return getattr(self, "__brake_type", None)
+        return getattr(self, "_Chassis__brake_type", None)
 
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
@@ -739,19 +739,19 @@ class Detailing(MaterialProperty):
         self.__protection_type = protection_type
 
     def get_primary_color(self):
-        return getattr(self, "__primary_color", None)
+        return getattr(self, "_Detailing__primary_color", None)
 
     def get_secondary_color(self):
-        return getattr(self, "__secondary_color", None)
+        return getattr(self, "_Detailing__secondary_color", None)
 
     def get_finish(self):
-        return getattr(self, "__finish", None)
+        return getattr(self, "_Detailing__finish", None)
 
     def get_texture(self):
-        return getattr(self, "__texture", None)
+        return getattr(self, "_Detailing__texture", None)
 
     def get_protection_type(self):
-        return getattr(self, "__protection_type", None)
+        return getattr(self, "_Detailing__protection_type", None)
 
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
@@ -971,25 +971,25 @@ class ElectricalSystem(MaterialProperty):
         self.__display_type = display_type
 
     def get_voltage(self):
-        return getattr(self, "__voltage", None)
+        return getattr(self, "_ElectricalSystem__voltage", None)
 
     def get_amperage(self):
-        return getattr(self, "__amperage", None)
+        return getattr(self, "_ElectricalSystem__amperage", None)
 
     def get_power_inout(self):
-        return getattr(self, "__power_inout", None)
+        return getattr(self, "_ElectricalSystem__power_inout", None)
 
     def get_temperature_rating(self):
-        return getattr(self, "__temperature_rating", None)
+        return getattr(self, "_ElectricalSystem__temperature_rating", None)
 
     def get_avg_lifespan(self):
-        return getattr(self, "__avg_lifespan", None)
+        return getattr(self, "_ElectricalSystem__avg_lifespan", None)
 
     def get_battery_type(self):
-        return getattr(self, "__battery_type", None)
+        return getattr(self, "_ElectricalSystem__battery_type", None)
 
     def get_display_type(self):
-        return getattr(self, "__display_type", None)
+        return getattr(self, "_ElectricalSystem__display_type", None)
 
     def get_power_efficiency(self):
         if (self.__power_inout != 0 and self.__voltage != 0 and self.__amperage != 0):
@@ -1006,8 +1006,8 @@ class ElectricalSystem(MaterialProperty):
             "power_inout": self.get_power_inout(),
             "temperature_rating": self.get_temperature_rating(),
             "avg_lifespan": self.get_avg_lifespan(),
-            "battery_type": self.battery_type,
-            "display_type": self.display_type
+            "battery_type": self.get_battery_type(),
+            "display_type": self.get_display_type()
         }
         base.update(added)
         return base

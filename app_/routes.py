@@ -244,6 +244,7 @@ def add_item_by_id():
     try:
         obj.part_stock.set_id(item_search)
         obj.part_stock.set_quantity(quantity)
+        print(f"OBJECT DETAILS: {type(obj.get_complete_details())}")
         add_to_cart(obj.get_complete_details())
     except ValueError as e:
         error = f"ValueError:  {e}. Error in setting the ID or the Quantity of the requested Item"
@@ -620,16 +621,18 @@ def buy():
     try:
         user_details = request.form.to_dict()
     except RuntimeError as e:
-        print(f"Unable to request details {e}")
+        err = f"Unable to request details {e}"
+        return render_template("error.html", message= err)
     except Exception as e:
-        print(f"Unexpected Error: {e}")
+        err = f"Unexpected Error: {e}"
+        return render_template("error.html", message= err)
 
     # checking if session["cart"] exists or not   
     try:
         if not session.get("cart"):
-            return "Unable to remove item from cart! Cart is empty"
+            return render_template("error.html", message="Unable to remove item from cart! Cart is empty")
     except KeyError as e:
-        return "Unable to remove item from cart! Cart is empty"
+        return render_template("error.html", message="Unable to remove item from cart! Cart is empty")
     except Exception as e:
         error = f"Unexpected Error: {e}"
         return 
@@ -665,7 +668,7 @@ def buy():
 
     # clears the current cart which also renders the home page
     clear_cart()
-    render_template("error.html", message=msg)
+    return render_template("index.html", message="Item Bough Successfully")
 
 @app.route('/remove_item', methods=["POST", "GET"])
 def remove_item():

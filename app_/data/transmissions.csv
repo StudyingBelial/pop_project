@@ -1,5 +1,5 @@
 id,name,quantity,price,description,item_type,brand,vat,weight,dimensions,composition,durability,torque,horsepower,transmission_type
-TR9257,DriveMax 9,23,1200.71,Durable cvt transmission.,transmission,BrandE,17.45,83.82,"(0.71, 0.52, 0.99)","{'Steel': 75, 'Iron': 25}",medium,327.4,180.4,CVT
+TR9257,DriveMax 9,18,1200.71,Durable cvt transmission.,transmission,BrandE,17.45,83.82,"(0.71, 0.52, 0.99)","{'Steel': 75, 'Iron': 25}",medium,327.4,180.4,CVT
 TR5663,HeavyTorque 2,47,1417.96,Durable cvt transmission.,transmission,BrandA,17.43,122.72,"(1.16, 0.93, 1.46)","{'Copper': 50, 'Steel': 50}",high,260.7,211.0,CVT
 TR9352,SwiftShift 4,25,2560.41,Efficient cvt transmission.,transmission,BrandC,17.35,106.26,"(1.09, 0.74, 1.08)","{'Copper': 50, 'Steel': 50}",medium,287.6,174.4,CVT
 TR2368,DriveMax 1,33,1621.05,Durable cvt transmission.,transmission,BrandA,17.4,71.59,"(0.9, 0.85, 1.31)","{'Steel': 70, 'Aluminum': 30}",low,527.2,207.4,CVT
