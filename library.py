@@ -1,3 +1,131 @@
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg')
+import pandas as pd
+
+class Visualizers:
+    def __init__(
+        self, 
+        file_path = ""
+    ):
+        self.file_path = file_path
+        self.__df__ = self.__df_creator__(file_path)
+
+    def __df_creator__(self, file_path):
+        try:
+            data_frame = pd.read_csv(file_path, index_col="id")
+            return data_frame
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
+            return render_template("server_crash.html")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return render_template("server_crash.html")
+        finally:
+            print(f"{file_path} has been passed")
+
+    def sales_over_time(self):
+        df = self.__df__
+
+        # converting the stored format into valid and usuable time
+        df["time_stamp"] = pd.to_datetime(df["time_stamp"])
+        #extracting individual dates: y-m-d
+        df["date"] = df["time_stamp"].dt.date
+        # grouping data by the individual days
+        group = df.groupby("date")
+        #extracting the total sales of each day
+        daily_sales = group["item_total"].sum()
+
+        # plotting the figure
+        plt.figure(figsize=(12, 6))
+        plt.plot(daily_sales.index, daily_sales.values, marker='o', color='blue')
+        
+        # adding labels and title
+        plt.xlabel("Date")
+        plt.ylabel("Total Sales In Revenue")
+        plt.title("Revenue History")
+
+        # proper formatting
+        plt.xticks(rotation=45)
+        plt.grid(True)
+        plt.tight_layout() # stops overlapping values and keys
+
+        # saving to path
+        plt.savefig(".\\app_\\static\\visuals\\SaleOverTime.png", dpi =300)#file path
+
+    def sale_per_transaction(self):
+        df = self.__df__
+
+        # group df by item_type
+        group = df.groupby("item_type")
+        # extract item_total from each group
+        item_total_group = group["item_total"]
+        # Calculates the sum item_total of each group
+        sales = item_total_group.sum()
+
+        # plotting the figure
+        plt.figure(figsize=(12, 6))
+        sales.plot(kind="bar", color="skyblue")
+
+        # adding labels and title
+        plt.xlabel("Item Type")
+        plt.ylabel("Total Sales")
+        plt.title("Sales per tranasaction per Item Type")
+
+        # proper formatting
+        plt.xticks(rotation=45)
+        plt.grid(True)
+        plt.tight_layout() # stops overlapping values and keys
+
+        # saving to path
+        plt.savefig(".\\app_\\static\\visuals\\SalePerTransaction.png", dpi =300)#file path
+
+    def quantity_sold_overtime(self):
+        df = self.__df__
+
+        # converting the stored format into valid and usuable time
+        df["time_stamp"] = pd.to_datetime(df["time_stamp"])
+        # adding a new col to the df with dates: y-m-d
+        df["date"] = df["time_stamp"].dt.date
+
+        #group df of quantity and date
+        group = df.groupby("date")["quantity"]
+        #calculating the sum
+        quantity = group.sum()
+
+        #plotting the figure
+        plt.figure(figsize=(12, 6))
+        quantity.plot(kind="line", marker='o',color="skyblue", linewidth=2)
+
+        #adding the labels and title
+        plt.xlabel("Date")
+        plt.ylabel("Quantity Sold")
+        plt.title("Quantity Sold Over Time by Item Type")
+
+        #proper formatting
+        plt.xticks(rotation=45)
+        plt.grid(True)
+        plt.tight_layout()# stops overlapping values and keys
+        # saving to path
+        plt.savefig(".\\app_\\static\\visuals\\QuantityOverTime.png", dpi =300)#file path
+
+    def revenue_by_type(self):
+        df = self.__df__
+
+        # grouping by item_type
+        group = df.groupby("item_type")
+        # summing up the revenue by item_type
+        revenue = group["item_total"].sum()
+
+        #plotting the figure
+        plt.figure(figsize=(10,10))
+        revenue.plot(kind="pie", legend=True, autopct="%1.1f%%", cmap="tab20")
+        plt.legend(title="Item Type", loc="lower left")
+        plt.tight_layout()# stops overlapping values and keys
+        #saving to path
+        plt.savefig(".\\app_\\static\\visuals\\RevenueType.png", dpi =300)#file path
+
+
 class StockItem:
     def __init__(
         self, 
@@ -19,76 +147,76 @@ class StockItem:
         self.set_brand(brand)
         self.set_vat(vat)
 
-    def type_checker(self, variable, types, variable_name):
+    def __type_checker__(self, variable, types, variable_name):
         if not isinstance(variable, types):
             raise TypeError(f"{variable_name} must be of type {types}")
 
     def set_id(self, id):
-        self.type_checker(id, str, 'id')
-        self.id = id
+        self.__type_checker__(id, str, 'id')
+        self.__id = id
 
     def set_name(self, name):
-        self.type_checker(name, str, 'name')
-        self.name = name
+        self.__type_checker__(name, str, 'name')
+        self.__name = name
 
     def set_quantity(self, quantity):
-        self.type_checker(quantity, int, 'quantity')
-        self.quantity = quantity
+        self.__type_checker__(quantity, int, 'quantity')
+        self.__quantity = quantity
 
     def set_price(self, price):
-        self.type_checker(price, (int, float), 'price')
-        self.price = price
+        self.__type_checker__(price, (int, float), 'price')
+        self.__price = price
 
     def set_description(self, description):
-        self.type_checker(description, str, 'description')
-        self.description = description
+        self.__type_checker__(description, str, 'description')
+        self.__description = description
 
     def set_item_type(self, item_type):
-        self.type_checker(item_type, str, 'item_type')
-        self.item_type = item_type
+        self.__type_checker__(item_type, str, 'item_type')
+        self.__item_type = item_type
 
     def set_brand(self, brand):
-        self.type_checker(brand, str, 'brand')
-        self.brand = brand
+        self.__type_checker__(brand, str, 'brand')
+        self.__brand = brand
 
     def set_vat(self, vat):
-        self.type_checker(vat, (int, float), 'vat')
-        self.vat = vat
+        self.__type_checker__(vat, (int, float), 'vat')
+        self.__vat = vat
 
     def increase_stock(self, change_amt):
-        self.type_checker(change_amt, int, 'change_amt')
-        self.quantity += change_amt
+        self.__type_checker__(change_amt, int, 'change_amt')
+        self.__quantity += change_amt
     
     def decrease_stock(self, change_amt):
-        self.type_checker(change_amt, int, 'change_amt')
-        if change_amt <= self.quantity:
-            self.quantity -= change_amt
+        self.__type_checker__(change_amt, int, 'change_amt')
+        if change_amt <= self.__quantity:
+            self.__quantity -= change_amt
         else:
             raise ValueError("Cannot Decrease Stock more than What is available")
 
     def get_id(self):
-        return getattr(self, "id", None)
+        return getattr(self, "__id", None)
 
     def get_name(self):
-        return getattr(self, "name", None)
+        return getattr(self, "__name", None)
 
     def get_quantity(self):
-        return getattr(self, "quantity", None)
+        return getattr(self, "__quantity", None)
 
     def get_price(self):
-        return getattr(self, "price", None)
+        return getattr(self, "__price", None)
 
     def get_description(self):
-        return getattr(self, "description", None)
+        return getattr(self, "__description", None)
 
     def get_item_type(self):
-        return getattr(self, "item_type", None)
+        return getattr(self, "__item_type", None)
 
     def get_brand(self):
-        return getattr(self, "brand", None)
+        return getattr(self, "__brand", None)
 
     def get_vat(self):
-        return getattr(self, "vat", None)
+        return getattr(self, "__vat", None)
 
     def get_stock_details(self):
         return {
@@ -184,45 +312,45 @@ class PowerChain(MaterialProperty):
 
     def set_torque(self, torque):
         self.material_type_check(torque, (int, float, str), "torque in Nm")
-        self.torque = torque
+        self.__torque = torque
 
     def set_horsepower(self, horsepower):
         self.material_type_check(horsepower, (int, float, str), "horsepower in HP")
-        self.horsepower = horsepower
+        self.__horsepower = horsepower
 
     def set_fuel_type(self, fuel_type):
         self.material_type_check(fuel_type, (str, type(None)), "fuel_type")
-        self.fuel_type = fuel_type
+        self.__fuel_type = fuel_type
 
     def set_fuel_efficiency(self, fuel_efficiency):
         self.material_type_check(fuel_efficiency, (str, int, float, type(None)), "fuel_efficiency in kWh")
-        self.fuel_efficiency = fuel_efficiency
+        self.__fuel_efficiency = fuel_efficiency
 
     def set_engine_type(self, engine_type):
         self.material_type_check(engine_type, (str, type(None)), "engine_type")
-        self.engine_type = engine_type
+        self.__engine_type = engine_type
 
     def set_transmission_type(self, transmission_type):
         self.material_type_check(transmission_type, (str, type(None)), "transmission_type")
-        self.transmission_type = transmission_type
+        self.__transmission_type = transmission_type
 
     def get_torque(self):
-        return getattr(self, "torque", None)
+        return getattr(self, "__torque", None)
 
     def get_horsepower(self):
-        return getattr(self, "horsepower", None)
+        return getattr(self, "__horsepower", None)
 
     def get_fuel_type(self):
-        return getattr(self, "fuel_type", None)
+        return getattr(self, "__fuel_type", None)
 
     def get_fuel_efficiency(self):
-        return getattr(self, "fuel_efficiency", None)
+        return getattr(self, "__fuel_efficiency", None)
 
     def get_engine_type(self):
-        return getattr(self, "engine_type", None)
+        return getattr(self, "__engine_type", None)
 
-    def get_transimission_type(self):
-        return getattr(self, "transimission_type", None)
+    def get_transmission_type(self):
+        return getattr(self, "__transmission_type", None)
 
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
@@ -232,7 +360,7 @@ class PowerChain(MaterialProperty):
             "fuel_type": self.get_fuel_type(),
             "fuel_efficiency": self.get_fuel_efficiency(),
             "engine_type": self.get_engine_type(),
-            "transimission_type": self.get_transimission_type()
+            "transmission_type": self.get_transmission_type()
         }
         base.update(added)
         return base
@@ -368,45 +496,45 @@ class Chassis(MaterialProperty):
 
     def set_load_capacity(self, load_capacity):
         self.material_type_check(load_capacity, (int, float, str), "load_capacity in kg")
-        self.load_capacity = load_capacity
+        self.__load_capacity = load_capacity
 
     def set_max_strain(self, max_strain):
         self.material_type_check(max_strain, (int, float, str, type(None)), "max_strain in numeric SI")
-        self.max_strain = max_strain
+        self.__max_strain = max_strain
 
     def set_max_stress(self, max_stress):
         self.material_type_check(max_stress, (int, float, str, type(None)), "max_stress in numeric SI")
-        self.max_stress = max_stress
+        self.__max_stress = max_stress
 
     def set_tire_type(self, tire_type):
         self.material_type_check(tire_type, (str, type(None)), "tire_type")
-        self.tire_type = tire_type
+        self.__tire_type = tire_type
 
     def set_suspension_type(self, suspension_type):
         self.material_type_check(suspension_type, (str, type(None)), "suspension_type")
-        self.suspension_type = suspension_type
+        self.__suspension_type = suspension_type
 
     def set_brake_type(self, brake_type):
-            self.material_type_check(brake_type, (str, type(None)), "brake_type")
-            self.brake_type = brake_type
+        self.material_type_check(brake_type, (str, type(None)), "brake_type")
+        self.__brake_type = brake_type
 
     def get_load_capacity(self):
-        return getattr(self, "load_capacity", None)
+        return getattr(self, "__load_capacity", None)
 
     def get_max_strain(self):
-        return getattr(self, "max_strain", None)
+        return getattr(self, "__max_strain", None)
 
     def get_max_stress(self):
-        return getattr(self, "max_stress", None)
+        return getattr(self, "__max_stress", None)
 
     def get_tire_type(self):
-        return getattr(self, "tire_type", None)
+        return getattr(self, "__tire_type", None)
 
     def get_suspension_type(self):
-        return getattr(self, "suspension_type", None)
+        return getattr(self, "__suspension_type", None)
 
     def get_brake_type(self):
-        return getattr(self, "brake_type", None)
+        return getattr(self, "__brake_type", None)
 
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
@@ -592,38 +720,38 @@ class Detailing(MaterialProperty):
 
     def set_finish(self, finish):
         self.material_type_check(finish, str, "finish")
-        self.finish = finish
+        self.__finish = finish
 
     def set_primary_color(self, primary_color):
         self.material_type_check(primary_color, str, "primary_color")
-        self.primary_color = primary_color
+        self.__primary_color = primary_color
 
     def set_secondary_color(self, secondary_color):
         self.material_type_check(secondary_color, (str, type(None)), "secondary_color")
-        self.secondary_color = secondary_color
+        self.__secondary_color = secondary_color
 
     def set_texture(self, texture):
         self.material_type_check(texture, (str, type(None)), "texture")
-        self.texture = texture
+        self.__texture = texture
 
     def set_protection_type(self, protection_type):
         self.material_type_check(protection_type, (str, type(None)), "protection_type")
-        self.protection_type = protection_type
+        self.__protection_type = protection_type
 
     def get_primary_color(self):
-        return getattr(self, "primary_color", None)
+        return getattr(self, "__primary_color", None)
 
     def get_secondary_color(self):
-        return getattr(self, "secondary_color", None)
+        return getattr(self, "__secondary_color", None)
 
     def get_finish(self):
-        return getattr(self, "finish", None)
+        return getattr(self, "__finish", None)
 
     def get_texture(self):
-        return getattr(self, "texture", None)
+        return getattr(self, "__texture", None)
 
     def get_protection_type(self):
-        return getattr(self, "protection_type", None)
+        return getattr(self, "__protection_type", None)
 
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
@@ -816,57 +944,57 @@ class ElectricalSystem(MaterialProperty):
 
     def set_voltage(self, voltage):
         self.material_type_check(voltage, (int, float, str), "voltage in V")
-        self.voltage = voltage
+        self.__voltage = voltage
 
     def set_amperage(self, amperage):
         self.material_type_check(amperage, (int, float, str), "amperage in A")
-        self.amperage = amperage
+        self.__amperage = amperage
 
     def set_power_inout(self, power_inout):
         self.material_type_check(power_inout, (int, float, str), "power_inout in W")
-        self.power_inout = power_inout
+        self.__power_inout = power_inout
 
     def set_temperature_rating(self, temperature_rating):
         self.material_type_check(temperature_rating, (int, float, str, type(None)), "temperature_rating in C")
-        self.temperature_rating = temperature_rating
+        self.__temperature_rating = temperature_rating
 
     def set_avg_lifespan(self, avg_lifespan):
         self.material_type_check(avg_lifespan, int, "avg_lifespan in hours")
-        self.avg_lifespan = avg_lifespan
+        self.__avg_lifespan = avg_lifespan
 
     def set_battery_type(self, battery_type):
         self.material_type_check(battery_type, (str, type(None)), "battery_type")
-        self.battery_type = battery_type
+        self.__battery_type = battery_type
 
     def set_display_type(self, display_type):
         self.material_type_check(display_type, (str, type(None)), "display_type")
-        self.display_type = display_type
+        self.__display_type = display_type
 
     def get_voltage(self):
-        return getattr(self, "voltage", None)
+        return getattr(self, "__voltage", None)
 
     def get_amperage(self):
-        return getattr(self, "amperage", None)
+        return getattr(self, "__amperage", None)
 
     def get_power_inout(self):
-        return getattr(self, "power_inout", None)
+        return getattr(self, "__power_inout", None)
 
     def get_temperature_rating(self):
-        return getattr(self, "temperature_rating", None)
+        return getattr(self, "__temperature_rating", None)
 
     def get_avg_lifespan(self):
-        return getattr(self, "avg_lifespan", None)
+        return getattr(self, "__avg_lifespan", None)
 
     def get_battery_type(self):
-        return getattr(self, "battery_type", None)
+        return getattr(self, "__battery_type", None)
 
     def get_display_type(self):
-        return getattr(self, "display_type", None)
+        return getattr(self, "__display_type", None)
 
     def get_power_efficiency(self):
-        if (self.power_inout != 0 and self.voltage != 0 and self.amperage != 0):
-            self.power_efficiency = (self.power_inout / (self.voltage * self.amperage)) * 100
-            return self.power_efficiency
+        if (self.__power_inout != 0 and self.__voltage != 0 and self.__amperage != 0):
+            self.__power_efficiency = (self.__power_inout / (self.__voltage * self.__amperage)) * 100
+            return self.__power_efficiency
         else:
             return 0
 
@@ -1050,36 +1178,35 @@ class Infotainment:
         stock = filtered_stock
         return stock
 
+# # Engine object
+# engine = Engine()
 
-# Engine object
-engine = Engine()
+# # Transmission object
+# transmission = Transmission()
 
-# Transmission object
-transmission = Transmission()
+# # Tire object
+# tire = Tire()
 
-# Tire object
-tire = Tire()
+# # Brake object
+# brake = Brake()
 
-# Brake object
-brake = Brake()
+# # Suspension object
+# suspension = Suspension()
 
-# Suspension object
-suspension = Suspension()
+# # Paint object
+# paint = Paint()
 
-# Paint object
-paint = Paint()
+# # SeatAndCover object
+# seat_and_cover = SeatAndCover()
 
-# SeatAndCover object
-seat_and_cover = SeatAndCover()
+# # DecalAndTint object
+# decal_and_tint = DecalAndTint()
 
-# DecalAndTint object
-decal_and_tint = DecalAndTint()
+# # Battery object
+# battery = Battery()
 
-# Battery object
-battery = Battery()
+# # WiringHarness object
+# wiring_harness = WiringHarness()
 
-# WiringHarness object
-wiring_harness = WiringHarness()
-
-# Infotainment object
-infotainment = Infotainment()
+# # Infotainment object
+# infotainment = Infotainment()

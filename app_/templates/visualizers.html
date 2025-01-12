@@ -1,0 +1,24 @@
+{% extends "template.html" %}
+
+{% block content %}
+<div class="container text-center">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-8">
+            <h2>Sales Revenue Over Time</h2>
+            <img src="{{ url_for('static', filename='visuals/SaleOverTime.png') }}" class="img-fluid">
+        </div>
+        <div class="col-sm-12 col-md-8">
+            <h2>Sales Per Item Type</h2>
+            <img src="{{ url_for('static', filename='visuals/SalePerTransaction.png') }}" class="img-fluid">
+        </div>
+        <div class="col-sm-12 col-md-8">
+            <h2>Quantity Sold Over Time</h2>
+            <img src="{{ url_for('static', filename='visuals/QuantityOverTime.png') }}" class="img-fluid">
+        </div>
+        <div class="col-sm-12 col-md-8">
+            <h2>Revenue Pie</h2>
+            <img src="{{ url_for('static', filename='visuals/RevenueType.png') }}" class="img-fluid">
+        </div>
+    </div>
+</div>
+{% endblock %}

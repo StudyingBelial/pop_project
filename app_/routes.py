@@ -10,7 +10,7 @@ import ast
 import csv
 import pandas as pd
 from datetime import datetime
-from library import StockItem, Engine, Transmission, Tire, Brake, Suspension, Paint, SeatAndCover, DecalAndTint, Battery, WiringHarness, Infotainment
+from library import StockItem, Engine, Transmission, Tire, Brake, Suspension, Paint, SeatAndCover, DecalAndTint, Battery, WiringHarness, Infotainment, Visualizers
 
 # method to create dataframe objects and return them
 def df_creator(file_path):
@@ -763,6 +763,11 @@ def increase_stock():
     df.to_csv(g.filepaths[component])
     return render_template("index.html", message="Stock Successfully Increases", cart_items=show_cart())
 
-@app.route('/visualizers')
+@app.route('/visualizers', methods=["GET"])
 def visualizers():
-    pass
+    visualizers = Visualizers(".\\app_\\data\\purchase_history.csv")
+    visualizers.sales_over_time()
+    visualizers.sale_per_transaction()
+    visualizers.quantity_sold_overtime()
+    visualizers.revenue_by_type()
+    return render_template("visualizers.html")
