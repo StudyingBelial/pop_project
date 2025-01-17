@@ -1,5 +1,5 @@
 id,name,quantity,price,description,item_type,brand,vat,weight,dimensions,composition,durability,torque,horsepower,fuel_type,fuel_efficiency,engine_type
-EN0001,Torque QUT 4,19.0,2274.92,Reliable petrol engine.,engine,BrandE,17.52,150.65,"(0.92, 0.95, 1.21)","{'Aluminum': 30, 'Steel': 70}",medium,542.6,435.0,Petrol,15.1,diesel
+EN0001,Torque QUT 4,25.0,2274.92,Reliable petrol engine.,engine,BrandE,17.52,150.65,"(0.92, 0.95, 1.21)","{'Aluminum': 30, 'Steel': 70}",medium,542.6,435.0,Petrol,15.1,diesel
 EN0002,PowerCore 5,44.0,3063.62,Efficient petrol engine.,engine,BrandD,17.6,83.1,"(1.48, 0.58, 0.6)","{'Steel': 60, 'Aluminum': 40}",low,517.3,382.4,Petrol,30.1,petrol
 EN0003,DieselMax 2,17.0,4033.27,Reliable diesel engine.,engine,BrandA,17.52,117.36,"(0.67, 1.14, 0.67)","{'Steel': 60, 'Aluminum': 40}",medium,275.6,278.8,Diesel,16.9,hybrid
 EN0004,DieselMax 7,13.0,2705.04,Reliable diesel engine.,engine,BrandD,17.48,143.08,"(0.62, 1.05, 1.45)","{'Aluminum': 80, 'Titanium': 20}",low,569.7,229.3,Diesel,17.8,petrol

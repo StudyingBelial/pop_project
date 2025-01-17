@@ -10,6 +10,7 @@ import ast
 import csv
 import pandas as pd
 from datetime import datetime
+import re
 from library import StockItem, Engine, Transmission, Tire, Brake, Suspension, Paint, SeatAndCover, DecalAndTint, Battery, WiringHarness, Infotainment, Visualizers
 
 # method to create dataframe objects and return them
@@ -111,9 +112,11 @@ def row_accesser(value, df_name):
             return "Incorrect ID, Please Try Again"
 
         dictionary = row.to_dict()
-
         # normalizing all the data coming from the df before any calculation
         try:
+            # will raise an error if the variables are malformed
+            tuple_regex_checker(dictionary["dimensions"])
+            dict_regex_checker(dictionary["composition"])
             dictionary["dimensions"] = ast.literal_eval(dictionary["dimensions"])
             dictionary["composition"] = ast.literal_eval(dictionary["composition"])
             dictionary["quantity"] = int(dictionary["quantity"])
@@ -128,6 +131,17 @@ def row_accesser(value, df_name):
         return error
 
     return dictionary
+
+# these regex checker function check if the tuple and dictionaries are malformed at all  
+def tuple_regex_checker(tuple_string):
+    tuple_regex = re.compile(r'^\(\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*\)$')
+    if not tuple_regex.match(tuple_string):
+        raise ValueError(f"Invalid tuple format: {tuple_string}")
+
+def dict_regex_checker(dict_string):
+    dict_regex = re.compile(r'^\{(?:\s*["\'].*?["\']\s*:\s*-?\d+(\.\d+)?\s*,?\s*)*\}$')
+    if not dict_regex.match(dict_string):
+        raise ValueError(f"Invalid dictionary format: {dict_string}")
 
 # creates an object from the g.classes dict and inserts a set of values into it to trigger its constructor and handle it's data properly
 def create_component_object(component,dictionary):
@@ -245,25 +259,35 @@ def add_item_by_id():
         obj.part_stock.set_id(item_search)
         obj.part_stock.set_quantity(quantity)
         print(f"OBJECT DETAILS: {type(obj.get_complete_details())}")
-        add_to_cart(obj.get_complete_details())
+        details = obj.get_complete_details()
+        if cart_checker(details):
+            return render_template("error.html", message=f"{details["id"]} already exists in cart. Remove it to change the quantity")
+        add_to_cart(details)
     except ValueError as e:
         error = f"ValueError:  {e}. Error in setting the ID or the Quantity of the requested Item"
         return render_template("error.html", message=error)
     except AttributeError as e:
-        error = f"AttributeError: {e}. Requested methods are unavailaible"
+        error = f"AttributeError: {e}."
         return render_template("error.html", message=error)
     except Exception as e:
         error = f"Unexpected Error: {e}"
         return render_template("error.html", message=error)  
 
-
     return render_template("index.html", cart_items= show_cart())
+
+def cart_checker(details):
+    id = details["id"]
+    item_type = details["item_type"]
+    if "cart" in session:
+        for item in session["cart"]:
+            if (item.get("id") == id and item.get("item_type") == item_type):
+                return True
+    return False
 
 @app.route('/add_new_item', methods=["POST" ,"GET"])
 def add_new_stock():
     if (request.method == "GET"):
         return render_template("add_new_stock.html")
-
     try:
         dictionary = request.form.to_dict()
     except RuntimeError as e:
@@ -275,6 +299,10 @@ def add_new_stock():
 
     # Normalizing all the data into valid types to appropriately add into the db    
     try:
+        # will raise an error if the variables are malformed
+        tuple_regex_checker(dictionary["dimensions"])
+        dict_regex_checker(dictionary["composition"])
+
         dictionary["price"] = float(dictionary["price"])
         dictionary["vat"] = float(dictionary["vat"])
         dictionary["weight"] = float(dictionary["weight"])
@@ -284,15 +312,15 @@ def add_new_stock():
     except ValueError as e:
         print(f"Invalid price {e}")
         error = f"{e} is an invalid number"
-        return error
+        return render_template("error.html", message = error)
     except TypeError as e:
         print(f"Invalid price {e}")
         error = f"{e} is an invalid number"
-        return error
+        return render_template("error.html", message = error)
     except Exception as e:
         print(f"Unexpected Error: {e}")
         error = f"{e} is an invalid number"
-        return error
+        return render_template("error.html", message = error)
 
     # Normalizing the data into valid ranges
     if (dictionary["price"] < 0):
@@ -343,15 +371,28 @@ def add_new_component():
         component_values = request.form.to_dict()
     except RuntimeError as e:
         error = f"Unable to request details {e} from the previous form"
-        return render_template("error.html", message=error)  
+        return render_template("error.html", message=error)
     except Exception as e:
         error = f"Unexpected Error: {e}"
-        return render_template("error.html", message=error) 
+        return render_template("error.html", message=error)
 
     #updating the dict with information from the previous form
     component_values.update(session["new_stock"])
+    #checking if the item_id alredy exists
+    try:
+        check_new_item_id(master_dictionary=component_values)
+    except ValueError as e:
+        return render_template("error.html", message=f"{e}: Item Id already exists?")
+    except Exception as e:
+        return render_template("error.html", message=f"{e}: Item Id already exists?")
 
     return add_to_df(master_dictionary=component_values, message="Item Added Successfully")
+
+def check_new_item_id(master_dictionary):
+    df = g.dataframes[master_dictionary["item_type"]]
+    id = master_dictionary["id"]
+    if id in df.index:
+        raise ValueError(f"Item ID {id} already exists in the dataframe")
 
 def add_to_df(master_dictionary, message):
     obj = create_component_object(component = master_dictionary["item_type"], dictionary=master_dictionary)
@@ -375,7 +416,7 @@ def add_to_df(master_dictionary, message):
     object_df = pd.concat([object_df, dictionary_df])
 
     # Comitting df to the appropriate file
-    df.to_csv(g.filepaths[dictionary["item_type"]])
+    object_df.to_csv(g.filepaths[dictionary["item_type"]])
     print("DF committed to storage")
 
     return render_template("index.html", message = message)
@@ -427,6 +468,10 @@ def get_change_stock():
 
         # normalizing the all the data properly for insersion
         try:
+            # will raise an error if the variables are malformed
+            tuple_regex_checker(dictionary["dimensions"])
+            dict_regex_checker(dictionary["composition"])
+
             dictionary["price"] = float(dictionary["price"])
             dictionary["vat"] = float(dictionary["vat"])
             dictionary["weight"] = float(dictionary["weight"])
@@ -448,12 +493,12 @@ def get_change_stock():
     for key, value in missing_dict.items():
         corresponding_value = all_values.get(key, None)
         key_value_dict[key] = [value, corresponding_value]
-
+    key_value_dict.pop("durability", None)
     return render_template("change_component_specific.html", dictionary=key_value_dict)
 
 def edit_existing_values(master_dictionary,message=""):
     # extracting the index to add it to the df properly
-    index = master_dictionary.pop("id")
+    index = master_dictionary.pop("id", None)
     # extracting component name to call the appropriate df
     component = master_dictionary["item_type"]
 
@@ -486,7 +531,7 @@ def check_out_verify():
         # checking the cart before any code is run with session["cart"]
         try:
             if not session.get("cart"):
-                return "Cart is empty"
+                return render_template("error.html", message="Cart is empty")
         except KeyError as e:
             error = "Cart is empty"
             return render_template("error.html", message = error)

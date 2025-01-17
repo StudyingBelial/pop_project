@@ -217,6 +217,20 @@ class StockItem:
     def get_vat(self):
         return getattr(self, "_StockItem__vat", None)
 
+    def __str__(self):
+        return (
+            f"""
+            ID: {self.get_id()}
+            Name: {self.get_name()}
+            Quantity: {self.get_quantity()}
+            Price: {self.get_price()}
+            Description: {self.get_description()}
+            Item Type: {self.get_item_type()}
+            Brand: {self.get_brand()}
+            VAT: {self.get_vat()}
+            """
+        )
+
     def get_stock_details(self):
         return {
             "id": self.get_id(),
@@ -407,6 +421,19 @@ class Engine:
             engine_type=engine_type
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Torque: {self.part_property.get_torque()}
+            Horsepower: {self.part_property.get_horsepower()}
+            Fuel Type: {self.part_property.get_fuel_type()}
+            Fuel Efficiency: {self.part_property.get_fuel_efficiency()}
+            Engine Type: {self.part_property.get_engine_type()}
+            Transmission Type: {self.part_property.get_transmission_type()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -455,6 +482,16 @@ class Transmission:
             torque=torque, 
             horsepower=horsepower, 
             transmission_type=transmission_type
+        )
+
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Torque: {self.part_property.get_torque()}
+            Horsepower: {self.part_property.get_horsepower()}
+            Transmission Type: {self.part_property.get_transmission_type()}
+            """
         )
 
     def get_complete_details(self):
@@ -587,6 +624,16 @@ class Tire:
             tire_type=tire_type
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Load Capacity: {self.part_property.get_load_capacity()}
+            Max Stress: {self.part_property.get_max_stress()}
+            Tire Type: {self.part_property.get_tire_type()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -635,6 +682,15 @@ class Brake:
             brake_type=brake_type
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Max Stress: {self.part_property.get_max_stress()}
+            Brake Type: {self.part_property.get_brake_type()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -681,6 +737,15 @@ class Suspension:
             durability=durability, 
             max_stress=max_stress, 
             suspension_type=suspension_type
+        )
+
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Max Stress: {self.part_property.get_max_stress()}
+            Suspension Type: {self.part_property.get_suspension_type()}
+            """
         )
 
     def get_complete_details(self):
@@ -799,6 +864,14 @@ class Paint:
             primary_color=primary_color
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Primary Color: {self.part_property.get_primary_color()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -851,6 +924,17 @@ class SeatAndCover:
             protection_type=protection_type
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Primary Color: {self.part_property.get_primary_color()}
+            Secondary Color: {self.part_property.get_secondary_color()}
+            Finish: {self.part_property.get_finish()}
+            Protection Type: {self.part_property.get_protection_type()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -901,6 +985,17 @@ class DecalAndTint:
             secondary_color=secondary_color, 
             finish=finish, 
             protection_type=protection_type
+        )
+
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Primary Color: {self.part_property.get_primary_color()}
+            Secondary Color: {self.part_property.get_secondary_color()}
+            Finish: {self.part_property.get_finish()}
+            Protection Type: {self.part_property.get_protection_type()}
+            """
         )
 
     def get_complete_details(self):
@@ -990,13 +1085,6 @@ class ElectricalSystem(MaterialProperty):
     def get_display_type(self):
         return getattr(self, "_ElectricalSystem__display_type", None)
 
-    def get_power_efficiency(self):
-        if (self.__power_inout != 0 and self.__voltage != 0 and self.__amperage != 0):
-            self.__power_efficiency = (self.__power_inout / (self.__voltage * self.__amperage)) * 100
-            return self.__power_efficiency
-        else:
-            return 0
-
     def get_material_property(self):
         base = MaterialProperty.get_material_property(self)
         added = {
@@ -1056,6 +1144,19 @@ class Battery:
             battery_type=battery_type
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Voltage: {self.part_property.get_voltage()}
+            Amperage: {self.part_property.get_amperage()}
+            Power In/Out: {self.part_property.get_power_inout()}
+            Average Lifespan: {self.part_property.get_avg_lifespan()}
+            Temperature Rating: {self.part_property.get_temperature_rating()}
+            Battery Type: {self.part_property.get_battery_type()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -1108,6 +1209,18 @@ class WiringHarness:
             power_inout=power_inout, 
             avg_lifespan=avg_lifespan, 
             temperature_rating=temperature_rating
+        )
+
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Voltage: {self.part_property.get_voltage()}
+            Amperage: {self.part_property.get_amperage()}
+            Power In/Out: {self.part_property.get_power_inout()}
+            Average Lifespan: {self.part_property.get_avg_lifespan()}
+            Temperature Rating: {self.part_property.get_temperature_rating()}
+            """
         )
 
     def get_complete_details(self):
@@ -1166,6 +1279,19 @@ class Infotainment:
             display_type=display_type
         )
 
+    def __str__(self):
+        return (
+            f"""
+            {self.part_stock}
+            Voltage: {self.part_property.get_voltage()}
+            Amperage: {self.part_property.get_amperage()}
+            Power In/Out: {self.part_property.get_power_inout()}
+            Average Lifespan: {self.part_property.get_avg_lifespan()}
+            Temperature Rating: {self.part_property.get_temperature_rating()}
+            Display Type: {self.part_property.get_display_type()}
+            """
+        )
+
     def get_complete_details(self):
         stock = self.part_stock.get_stock_details()
         quality = self.part_property.get_material_property()
@@ -1177,36 +1303,36 @@ class Infotainment:
         stock = filtered_stock
         return stock
 
-# #Class Testers
-# # Engine object
-# engine = Engine()
+#Class Testers
+# Engine object
+engine = Engine()
 
-# # Transmission object
-# transmission = Transmission()
+# Transmission object
+transmission = Transmission()
 
-# # Tire object
-# tire = Tire()
+# Tire object
+tire = Tire()
 
-# # Brake object
-# brake = Brake()
+# Brake object
+brake = Brake()
 
-# # Suspension object
-# suspension = Suspension()
+# Suspension object
+suspension = Suspension()
 
-# # Paint object
-# paint = Paint()
+# Paint object
+paint = Paint()
 
-# # SeatAndCover object
-# seat_and_cover = SeatAndCover()
+# SeatAndCover object
+seat_and_cover = SeatAndCover()
 
-# # DecalAndTint object
-# decal_and_tint = DecalAndTint()
+# DecalAndTint object
+decal_and_tint = DecalAndTint()
 
-# # Battery object
-# battery = Battery()
+# Battery object
+battery = Battery()
 
-# # WiringHarness object
-# wiring_harness = WiringHarness()
+# WiringHarness object
+wiring_harness = WiringHarness()
 
-# # Infotainment object
-# infotainment = Infotainment()
+# Infotainment object
+infotainment = Infotainment()
