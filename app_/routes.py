@@ -596,7 +596,7 @@ def df_committer_post_purchase():
             obj.part_stock.set_id(items["id"])
             master_dict = obj.get_complete_details()
         except TypeError as e:
-            error = f"TypeError: {e}. session['cart'] contains invalid 'quantity' type"
+            error = f"TypeError: {e}. session['cart'] contains invalid type"
             return error
         except ValueError as e:
             error = f"ValueError: {e}. Unable to call StockItem.decrease_stock() to change stock as quantity value is invalid"
@@ -668,7 +668,7 @@ def buy():
 
     # clears the current cart which also renders the home page
     clear_cart()
-    return render_template("index.html", message="Item Bough Successfully")
+    return render_template("index.html", message="Item Bought Successfully")
 
 @app.route('/remove_item', methods=["POST", "GET"])
 def remove_item():

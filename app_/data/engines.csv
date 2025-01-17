@@ -1,5 +1,5 @@
 id,name,quantity,price,description,item_type,brand,vat,weight,dimensions,composition,durability,torque,horsepower,fuel_type,fuel_efficiency,engine_type
-EN0001,Torque QUT 4,22.0,2274.92,Reliable petrol engine.,engine,BrandE,17.52,150.65,"(0.92, 0.95, 1.21)","{'Aluminum': 30, 'Steel': 70}",medium,542.6,435.0,Petrol,15.1,diesel
+EN0001,Torque QUT 4,19.0,2274.92,Reliable petrol engine.,engine,BrandE,17.52,150.65,"(0.92, 0.95, 1.21)","{'Aluminum': 30, 'Steel': 70}",medium,542.6,435.0,Petrol,15.1,diesel
 EN0002,PowerCore 5,44.0,3063.62,Efficient petrol engine.,engine,BrandD,17.6,83.1,"(1.48, 0.58, 0.6)","{'Steel': 60, 'Aluminum': 40}",low,517.3,382.4,Petrol,30.1,petrol
 EN0003,DieselMax 2,17.0,4033.27,Reliable diesel engine.,engine,BrandA,17.52,117.36,"(0.67, 1.14, 0.67)","{'Steel': 60, 'Aluminum': 40}",medium,275.6,278.8,Diesel,16.9,hybrid
 EN0004,DieselMax 7,13.0,2705.04,Reliable diesel engine.,engine,BrandD,17.48,143.08,"(0.62, 1.05, 1.45)","{'Aluminum': 80, 'Titanium': 20}",low,569.7,229.3,Diesel,17.8,petrol
@@ -7,7 +7,7 @@ EN0005,PowerCore 7,39.0,4976.79,Advanced hybrid engine.,engine,BrandC,17.34,88.2
 EN0006,VoltDrive 9,22.0,4877.0,Efficient electric engine.,engine,BrandB,17.31,167.73,"(0.82, 1.21, 1.0)","{'Steel': 60, 'Aluminum': 40}",high,429.1,375.1,Electric,45.2,diesel
 EN0007,PowerCore 1,23.0,4701.52,Advanced electric engine.,engine,BrandE,17.55,134.84,"(0.56, 0.91, 1.26)","{'Steel': 75, 'Iron': 25}",medium,508.6,399.6,Electric,43.1,hybrid
 EN0008,HorsePower 8,23.0,1623.04,Advanced diesel engine.,engine,BrandB,17.32,148.57,"(1.23, 1.4, 1.3)","{'Steel': 75, 'Iron': 25}",low,528.2,371.4,Diesel,11.2,diesel
-EN0009,PowerCore 9,1.0,4529.62,Advanced hybrid engine.,engine,BrandA,17.42,109.34,"(1.28, 1.08, 1.42)","{'Steel': 60, 'Aluminum': 40}",medium,352.8,119.8,Hybrid,18.8,diesel
+EN0009,PowerCore 9,11.0,4529.62,Advanced hybrid engine.,engine,BrandA,17.42,109.34,"(1.28, 1.08, 1.42)","{'Steel': 60, 'Aluminum': 40}",medium,352.8,119.8,Hybrid,18.8,diesel
 EN0010,DieselMax 7,8.0,3030.54,Efficient diesel engine.,engine,BrandC,17.53,198.56,"(1.48, 0.99, 1.07)","{'Steel': 75, 'Iron': 25}",medium,578.7,145.0,Diesel,15.5,hybrid
 EN0011,DieselMax 9,37.0,1947.0,High-performance diesel engine.,engine,BrandA,17.51,81.32,"(1.43, 1.06, 1.47)","{'Aluminum': 80, 'Titanium': 20}",low,237.5,368.2,Diesel,11.9,hybrid
 EN0012,TorqueX 4,22.0,2711.86,Efficient diesel engine.,engine,BrandA,17.43,179.43,"(0.58, 1.38, 0.95)","{'Copper': 50, 'Steel': 50}",high,229.4,429.2,Diesel,37.0,electric

@@ -125,7 +125,6 @@ class Visualizers:
         #saving to path
         plt.savefig(".\\app_\\static\\visuals\\RevenueType.png", dpi =300)#file path
 
-
 class StockItem:
     def __init__(
         self, 
@@ -133,7 +132,7 @@ class StockItem:
         name = "Unknown Stock Name",
         quantity = 0, 
         price = 0.0, 
-        description = "", 
+        description = "Unknown Stock Description", 
         item_type = "", 
         brand = "N/A", 
         vat = 17.5,
@@ -234,33 +233,33 @@ class MaterialProperty:
     def __init__(self, *args, **kwargs):
         raise TypeError(f"Cannot Instantiate {self.__class__.__name__}")
 
-    def material_type_check(self, variable, types, variable_name):
+    def __material_type_check__(self, variable, types, variable_name):
         if not isinstance(variable, types):
             raise TypeError(f"{variable_name} must be of type {types}")
 
     def set_weight(self, weight):
-        self.material_type_check(weight, (int, float), "weight")
+        self.__material_type_check__(weight, (int, float), "weight")
         if (weight <= 0):
             raise ValueError("Weight cannot be Zero or negative")
         self.__weight = weight
 
     def set_dimensions(self, dimension_tuple):
-        self.material_type_check(dimension_tuple, tuple, "dimension_tuple")
+        self.__material_type_check__(dimension_tuple, tuple, "dimension_tuple")
         for value in dimension_tuple:
-            self.material_type_check(value, (int, float), "dimension_value")
+            self.__material_type_check__(value, (int, float), "dimension_value")
         if (len(dimension_tuple) != 3):
             raise ValueError("{dimension_tuple} can only have 3 values")
         self.__dimensions = dimension_tuple
 
     def set_material_composition(self, composition_dict):
-        self.material_type_check(composition_dict, dict, "composition_dict")
+        self.__material_type_check__(composition_dict, dict, "composition_dict")
         for key, value in composition_dict.items():
-            self.material_type_check(key, str, "material_type")
-            self.material_type_check(value, (int, float), "material_proportion")
+            self.__material_type_check__(key, str, "material_type")
+            self.__material_type_check__(value, (int, float), "material_proportion")
         self.__composition = composition_dict
 
     def set_durability(self, durability):
-        self.material_type_check(durability, str, "durability")
+        self.__material_type_check__(durability, str, "durability")
         if durability not in ["high", "medium", "low", "undefined"]:
             raise ValueError("Durability must be 'high', 'medium', 'low', or 'undefined'")
         self.__durability = durability
@@ -311,27 +310,27 @@ class PowerChain(MaterialProperty):
         self.set_transmission_type(transmission_type)
 
     def set_torque(self, torque):
-        self.material_type_check(torque, (int, float, str), "torque in Nm")
+        self.__material_type_check__(torque, (int, float, str), "torque in Nm")
         self.__torque = torque
 
     def set_horsepower(self, horsepower):
-        self.material_type_check(horsepower, (int, float, str), "horsepower in HP")
+        self.__material_type_check__(horsepower, (int, float, str), "horsepower in HP")
         self.__horsepower = horsepower
 
     def set_fuel_type(self, fuel_type):
-        self.material_type_check(fuel_type, (str, type(None)), "fuel_type")
+        self.__material_type_check__(fuel_type, (str, type(None)), "fuel_type")
         self.__fuel_type = fuel_type
 
     def set_fuel_efficiency(self, fuel_efficiency):
-        self.material_type_check(fuel_efficiency, (str, int, float, type(None)), "fuel_efficiency in kWh")
+        self.__material_type_check__(fuel_efficiency, (str, int, float, type(None)), "fuel_efficiency in kWh")
         self.__fuel_efficiency = fuel_efficiency
 
     def set_engine_type(self, engine_type):
-        self.material_type_check(engine_type, (str, type(None)), "engine_type")
+        self.__material_type_check__(engine_type, (str, type(None)), "engine_type")
         self.__engine_type = engine_type
 
     def set_transmission_type(self, transmission_type):
-        self.material_type_check(transmission_type, (str, type(None)), "transmission_type")
+        self.__material_type_check__(transmission_type, (str, type(None)), "transmission_type")
         self.__transmission_type = transmission_type
 
     def get_torque(self):
@@ -404,7 +403,7 @@ class Engine:
             torque=torque, 
             horsepower=horsepower, 
             fuel_type=fuel_type, 
-            fuel_efficiency=fuel_efficiency, 
+            fuel_efficiency=fuel_efficiency,
             engine_type=engine_type
         )
 
@@ -495,27 +494,27 @@ class Chassis(MaterialProperty):
         self.set_brake_type(brake_type)
 
     def set_load_capacity(self, load_capacity):
-        self.material_type_check(load_capacity, (int, float, str), "load_capacity in kg")
+        self.__material_type_check__(load_capacity, (int, float, str), "load_capacity in kg")
         self.__load_capacity = load_capacity
 
     def set_max_strain(self, max_strain):
-        self.material_type_check(max_strain, (int, float, str, type(None)), "max_strain in numeric SI")
+        self.__material_type_check__(max_strain, (int, float, str, type(None)), "max_strain in numeric SI")
         self.__max_strain = max_strain
 
     def set_max_stress(self, max_stress):
-        self.material_type_check(max_stress, (int, float, str, type(None)), "max_stress in numeric SI")
+        self.__material_type_check__(max_stress, (int, float, str, type(None)), "max_stress in numeric SI")
         self.__max_stress = max_stress
 
     def set_tire_type(self, tire_type):
-        self.material_type_check(tire_type, (str, type(None)), "tire_type")
+        self.__material_type_check__(tire_type, (str, type(None)), "tire_type")
         self.__tire_type = tire_type
 
     def set_suspension_type(self, suspension_type):
-        self.material_type_check(suspension_type, (str, type(None)), "suspension_type")
+        self.__material_type_check__(suspension_type, (str, type(None)), "suspension_type")
         self.__suspension_type = suspension_type
 
     def set_brake_type(self, brake_type):
-        self.material_type_check(brake_type, (str, type(None)), "brake_type")
+        self.__material_type_check__(brake_type, (str, type(None)), "brake_type")
         self.__brake_type = brake_type
 
     def get_load_capacity(self):
@@ -719,23 +718,23 @@ class Detailing(MaterialProperty):
         self.set_protection_type(protection_type)
 
     def set_finish(self, finish):
-        self.material_type_check(finish, str, "finish")
+        self.__material_type_check__(finish, str, "finish")
         self.__finish = finish
 
-    def set_primary_color(self, primary_color):
-        self.material_type_check(primary_color, str, "primary_color")
-        self.__primary_color = primary_color
+    def set_primary_color(self, color):
+        self.__material_type_check__(color, str, "primary_color")
+        self.__primary_color = color
 
-    def set_secondary_color(self, secondary_color):
-        self.material_type_check(secondary_color, (str, type(None)), "secondary_color")
-        self.__secondary_color = secondary_color
+    def set_secondary_color(self, color):
+        self.__material_type_check__(color, (str, type(None)), "secondary_color")
+        self.__secondary_color = color
 
     def set_texture(self, texture):
-        self.material_type_check(texture, (str, type(None)), "texture")
+        self.__material_type_check__(texture, (str, type(None)), "texture")
         self.__texture = texture
 
     def set_protection_type(self, protection_type):
-        self.material_type_check(protection_type, (str, type(None)), "protection_type")
+        self.__material_type_check__(protection_type, (str, type(None)), "protection_type")
         self.__protection_type = protection_type
 
     def get_primary_color(self):
@@ -943,31 +942,31 @@ class ElectricalSystem(MaterialProperty):
         self.set_display_type(display_type)
 
     def set_voltage(self, voltage):
-        self.material_type_check(voltage, (int, float, str), "voltage in V")
+        self.__material_type_check__(voltage, (int, float, str), "voltage in V")
         self.__voltage = voltage
 
     def set_amperage(self, amperage):
-        self.material_type_check(amperage, (int, float, str), "amperage in A")
+        self.__material_type_check__(amperage, (int, float, str), "amperage in A")
         self.__amperage = amperage
 
     def set_power_inout(self, power_inout):
-        self.material_type_check(power_inout, (int, float, str), "power_inout in W")
+        self.__material_type_check__(power_inout, (int, float, str), "power_inout in W")
         self.__power_inout = power_inout
 
     def set_temperature_rating(self, temperature_rating):
-        self.material_type_check(temperature_rating, (int, float, str, type(None)), "temperature_rating in C")
+        self.__material_type_check__(temperature_rating, (int, float, str, type(None)), "temperature_rating in C")
         self.__temperature_rating = temperature_rating
 
     def set_avg_lifespan(self, avg_lifespan):
-        self.material_type_check(avg_lifespan, int, "avg_lifespan in hours")
+        self.__material_type_check__(avg_lifespan, int, "avg_lifespan in hours")
         self.__avg_lifespan = avg_lifespan
 
     def set_battery_type(self, battery_type):
-        self.material_type_check(battery_type, (str, type(None)), "battery_type")
+        self.__material_type_check__(battery_type, (str, type(None)), "battery_type")
         self.__battery_type = battery_type
 
     def set_display_type(self, display_type):
-        self.material_type_check(display_type, (str, type(None)), "display_type")
+        self.__material_type_check__(display_type, (str, type(None)), "display_type")
         self.__display_type = display_type
 
     def get_voltage(self):
@@ -1178,6 +1177,7 @@ class Infotainment:
         stock = filtered_stock
         return stock
 
+# #Class Testers
 # # Engine object
 # engine = Engine()
 
