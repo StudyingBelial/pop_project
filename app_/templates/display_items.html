@@ -1,0 +1,40 @@
+{% extends "template.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Item Type</th>
+                    <th scope="col">Brand</th>
+                    <th scope="col">Vat</th>
+                    <th scope="col">Weight</th>
+                    <th scope="col">Dimensions</th>
+                    <th scope="col">Composition</th>
+                    <th scope="col">Durability</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <th scope="row">{{item.id}}</th>
+                    <td>{{item.name}}</td>
+                    <td>{{item.quantity}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.item_type}}</td>
+                    <td>{{item.brand}}</td>
+                    <td>{{item.vat}}</td>
+                    <td>{{item.weight}}</td>
+                    <td>{{item.dimensions}}</td>
+                    <td>{{item.composition}}</td>
+                    <td>{{item.durability}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

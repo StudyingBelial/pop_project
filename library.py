@@ -1303,36 +1303,36 @@ class Infotainment:
         stock = filtered_stock
         return stock
 
-#Class Testers
-# Engine object
-engine = Engine()
+# #Class Testers
+# # Engine object
+# engine = Engine()
 
-# Transmission object
-transmission = Transmission()
+# # Transmission object
+# transmission = Transmission()
 
-# Tire object
-tire = Tire()
+# # Tire object
+# tire = Tire()
 
-# Brake object
-brake = Brake()
+# # Brake object
+# brake = Brake()
 
-# Suspension object
-suspension = Suspension()
+# # Suspension object
+# suspension = Suspension()
 
-# Paint object
-paint = Paint()
+# # Paint object
+# paint = Paint()
 
-# SeatAndCover object
-seat_and_cover = SeatAndCover()
+# # SeatAndCover object
+# seat_and_cover = SeatAndCover()
 
-# DecalAndTint object
-decal_and_tint = DecalAndTint()
+# # DecalAndTint object
+# decal_and_tint = DecalAndTint()
 
-# Battery object
-battery = Battery()
+# # Battery object
+# battery = Battery()
 
-# WiringHarness object
-wiring_harness = WiringHarness()
+# # WiringHarness object
+# wiring_harness = WiringHarness()
 
-# Infotainment object
-infotainment = Infotainment()
+# # Infotainment object
+# infotainment = Infotainment()

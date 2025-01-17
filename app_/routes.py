@@ -811,6 +811,33 @@ def increase_stock():
     df.to_csv(g.filepaths[component])
     return render_template("index.html", message="Stock Successfully Increases", cart_items=show_cart())
 
+@app.route('/display_all', methods=["GET", "POST"])
+def display_all_data():
+    if (request.method == "GET"):
+        return render_template("display_form.html")
+
+    try:
+        component_type = request.form.get("component_type")
+        df = g.dataframes[component_type]
+    except RuntimeError as e:
+        error = f"Unable to request details: {e}"
+        return render_template("error.html", message = error)
+    except KeyError as e:
+        error = f"Unable to access df: {e}"
+        return render_template("error.html", message = error)
+    except Exception as e:
+        error = f"Unexpected Error: {e}"
+        return render_template("error.html", message = error)
+
+    # Dumping the entire df into list of dicts
+    result = []
+    for id, row in df.iterrows():
+        row_dict = row.to_dict()
+        row_dict["id"] = id
+        result.append(row_dict)
+    
+    return render_template("display_items.html", data = result)
+
 @app.route('/visualizers', methods=["GET"])
 def visualizers():
     visualizers = Visualizers(".\\app_\\data\\purchase_history.csv")
